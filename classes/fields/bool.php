@@ -18,17 +18,20 @@ You should have received a copy of the GNU Lesser General Public License
 along with NeoFrag. If not, see <http://www.gnu.org/licenses/>.
 **************************************************************************/
 
-class Core extends NeoFrag
+class Field_Bool
 {
-	public $load;
-
-	public function __construct()
+	public function value($value)
 	{
-		$this->load = NeoFrag();
+		return (bool)$value;
+	}
+
+	public function raw($value)
+	{
+		return (string)(int)$value;
 	}
 }
 
 /*
-NeoFrag Alpha 0.1.6
-./classes/core.php
+NeoFrag Alpha 0.1.7
+./classes/fields/bool.php
 */

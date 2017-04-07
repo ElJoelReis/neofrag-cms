@@ -18,17 +18,15 @@ You should have received a copy of the GNU Lesser General Public License
 along with NeoFrag. If not, see <http://www.gnu.org/licenses/>.
 **************************************************************************/
 
-class Core extends NeoFrag
+class Field_Date extends Field_DateTime
 {
-	public $load;
-
-	public function __construct()
+	public function raw($value)
 	{
-		$this->load = NeoFrag();
+		return substr($value->sql(), 0, 10);
 	}
 }
 
 /*
-NeoFrag Alpha 0.1.6
-./classes/core.php
+NeoFrag Alpha 0.1.7
+./classes/fields/date.php
 */

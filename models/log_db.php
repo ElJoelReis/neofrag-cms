@@ -18,17 +18,25 @@ You should have received a copy of the GNU Lesser General Public License
 along with NeoFrag. If not, see <http://www.gnu.org/licenses/>.
 **************************************************************************/
 
-class Core extends NeoFrag
+class NeoFrag_m_log_db extends Model2
 {
-	public $load;
+	const DB  = 'logs';
+	const LOG = NULL;
 
-	public function __construct()
+	static public function __schema()
 	{
-		$this->load = NeoFrag();
+		return [
+			'id'        => self::field()->primary(),
+			'date'      => self::field()->datetime(),
+			'action'    => self::field()->enum(0, 1, 2),//create - update - delete
+			'model'     => self::field()->text(100),
+			'primaries' => self::field()->text(100)->null(),
+			'data'      => self::field()->serialized()
+		];
 	}
 }
 
 /*
-NeoFrag Alpha 0.1.6
-./classes/core.php
+NeoFrag Alpha 0.1.7
+./models/log_db.php
 */

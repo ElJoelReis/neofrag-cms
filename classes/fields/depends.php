@@ -18,17 +18,43 @@ You should have received a copy of the GNU Lesser General Public License
 along with NeoFrag. If not, see <http://www.gnu.org/licenses/>.
 **************************************************************************/
 
-class Core extends NeoFrag
+class Field_Depends
 {
-	public $load;
+	protected $_model;
+	protected $_suffix;
 
-	public function __construct()
+	public function __construct($model, $suffix = '_id')
 	{
-		$this->load = NeoFrag();
+		$this->_model  = explode('/', $model);
+		$this->_suffix = $suffix;
+	}
+
+	public function key($key)
+	{
+		return $key.$this->_suffix;
+	}
+
+	public function raw($value)
+	{
+		return is_a($value, 'Model2') ? ($value->id ?: NULL) : $value;
+	}
+
+	public function value($value)
+	{
+		if (isset($this->_model[1]))
+		{
+			$value = NeoFrag()->module($this->_model[0])->model2($this->_model[1], $value);
+		}
+		else
+		{
+			$value = NeoFrag()->model2($this->_model[0], $value);
+		}
+
+		return $value;
 	}
 }
 
 /*
-NeoFrag Alpha 0.1.6
-./classes/core.php
+NeoFrag Alpha 0.1.7
+./classes/fields/depends.php
 */

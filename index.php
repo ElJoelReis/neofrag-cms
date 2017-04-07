@@ -159,6 +159,10 @@ $NeoFrag = load('loader', [
 		'overrides/libraries',
 		'libraries',
 	],
+	'models' => [
+		'overrides/models',
+		'models'
+	],
 	'modules' => [
 		'overrides/modules',
 		'modules'

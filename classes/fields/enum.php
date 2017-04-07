@@ -18,17 +18,22 @@ You should have received a copy of the GNU Lesser General Public License
 along with NeoFrag. If not, see <http://www.gnu.org/licenses/>.
 **************************************************************************/
 
-class Core extends NeoFrag
+class Field_Enum
 {
-	public $load;
+	protected $_values;
 
 	public function __construct()
 	{
-		$this->load = NeoFrag();
+		$this->_values = func_get_args();
+	}
+
+	public function raw($value)
+	{
+		return (string)$value;
 	}
 }
 
 /*
-NeoFrag Alpha 0.1.6
-./classes/core.php
+NeoFrag Alpha 0.1.7
+./classes/fields/enum.php
 */

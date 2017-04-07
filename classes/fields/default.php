@@ -18,17 +18,25 @@ You should have received a copy of the GNU Lesser General Public License
 along with NeoFrag. If not, see <http://www.gnu.org/licenses/>.
 **************************************************************************/
 
-class Core extends NeoFrag
+class Field_Default
 {
-	public $load;
+	protected $_default;
 
-	public function __construct()
+	public function __construct($default)
 	{
-		$this->load = NeoFrag();
+		$this->_default = $default;
+	}
+
+	public function default_($value)
+	{
+		if ($value === NULL)
+		{
+			return $this->_default;
+		}
 	}
 }
 
 /*
-NeoFrag Alpha 0.1.6
-./classes/core.php
+NeoFrag Alpha 0.1.7
+./classes/fields/default.php
 */

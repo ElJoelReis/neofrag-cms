@@ -106,7 +106,7 @@ abstract class NeoFrag
 					$library->load = $this->load;
 				}
 
-				return $this->load->libraries[$library->name = $name] = $library->set_id();
+				return $this->load->libraries[$library->name = $name] = is_a($library, 'Library') ? $library->set_id() : $library;
 			}
 		}
 
@@ -246,6 +246,27 @@ abstract class NeoFrag
 		if ($model = $this->_load($name, 'model', preg_replace('/^o_/', '', get_class($this->load->caller)).'_m_'.$name, $this->load->models))
 		{
 			$model->load = $this->load;
+		}
+
+		return $model;
+	}
+
+	public function model2($name = '', $id = 0)
+	{
+		if (is_integer($name))
+		{
+			$id   = $name;
+			$name = '';
+		}
+
+		if ($name === '')
+		{
+			$name = $this->load->caller->name;
+		}
+
+		if (($model = $this->_load($name, 'model', preg_replace('/^o_/', '', get_class($this->load->caller)).'_m_'.$name, $this->load->models, NULL, FALSE, NULL, [$name, $this->load])))
+		{
+			$model = $model->read($id);
 		}
 
 		return $model;
@@ -469,9 +490,26 @@ abstract class NeoFrag
 				continue;
 			}
 
-			if ($type == 'model' && in_string('modules/', $dir))
+			if ($type == 'model')
 			{
-				$class = preg_replace('/^w_/', 'm_', $class);
+				if (in_string('modules/', $dir))
+				{
+					$class = preg_replace('/^w_/', 'm_', $class);
+				}
+				else if (preg_match('_^(?:overrides/)?models_', $dir))
+				{
+					$class = preg_replace('/^._(.+?)_/', 'NeoFrag_', $class);
+
+					if (isset(NeoFrag()->models[$name]))
+					{
+						$object = NeoFrag()->models[$name];
+						break;
+					}
+					else
+					{
+						$constructor[1] = NeoFrag();
+					}
+				}
 			}
 
 			if (in_string('overrides/', $path))

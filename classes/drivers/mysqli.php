@@ -35,7 +35,7 @@ class Driver_mysqli extends Driver
 			self::$db->query('SET time_zone = "+00:00"');
 			self::$db->query('SET time_zone = "'.(self::$_time_zone = date_create(self::$db->query('SELECT NOW()')->fetch_row()[0])->diff(date_create())->format('%R%H:%I')).'"');
 
-			return TRUE;
+			return self::$db;
 		}
 	}
 

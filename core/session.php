@@ -134,7 +134,7 @@ class Session extends Core
 	private function _session_id()
 	{
 		$this->_session_id = unique_id($this->db->select('session_id')->from('nf_sessions')->get());
-		setcookie($this->config->nf_cookie_name, $this->_session_id, strtotime('+1 year'), url(), '', !empty($_SERVER['HTTPS']), TRUE);
+		setcookie($this->config->nf_cookie_name, $this->_session_id, strtotime('+1 year'), url(), '', !empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] != 'off', TRUE);
 	}
 
 	public function save()

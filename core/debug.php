@@ -195,7 +195,7 @@ class Debug extends Core
 
 	public function is_enabled()
 	{
-		return $this->_debugbar == 2 || ($this->_debugbar == 1 && (!isset($this->user) || $this->user('admin')));
+		return $this->_debugbar == 2 || ($this->_debugbar == 1 && (!isset($this->user) || $this->user->admin));
 	}
 	
 	public function display()

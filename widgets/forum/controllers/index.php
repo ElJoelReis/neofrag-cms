@@ -76,7 +76,7 @@ class w_forum_c_index extends Controller_Widget
 	
 	public function activity($config = [])
 	{
-		$users = $this->db->select('DISTINCT u.user_id', 'u.username')->from('nf_sessions s')->join('nf_users u', 'u.user_id = s.user_id AND u.deleted = "0"', 'INNER')->where('s.last_activity > DATE_SUB(NOW(), INTERVAL 5 MINUTE)')->where('s.is_crawler', FALSE)->get();
+		$users = $this->db->select('DISTINCT u.id as user_id', 'u.username')->from('nf_sessions s')->join('nf_user u', 'u.id = s.user_id AND u.deleted = "0"', 'INNER')->where('s.last_activity > DATE_SUB(NOW(), INTERVAL 5 MINUTE)')->where('s.is_crawler', FALSE)->get();
 
 		array_natsort($users, function($a){
 			return $a['username'];

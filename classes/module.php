@@ -233,11 +233,11 @@ abstract class Module extends Loadable
 			
 			if ($this->is_administrable())
 			{
-				if ($this->user('admin'))
+				if ($this->user->admin)
 				{
 					$allowed = TRUE;
 				}
-				else if (isset($this->groups($this->user('user_id'))[1]) && ($all_permissions = $this->get_permissions('default')))
+				else if (isset($this->groups($this->user->id)[1]) && ($all_permissions = $this->get_permissions('default')))
 				{
 					foreach ($all_permissions['access'] as $a)
 					{

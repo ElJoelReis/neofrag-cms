@@ -90,7 +90,7 @@ class m_live_editor_c_ajax_checker extends Controller_Module
 	
 	public function widget_admin()
 	{
-		if ($this->user('admin'))
+		if ($this->user->admin)
 		{
 			$post = post();
 			
@@ -149,7 +149,7 @@ class m_live_editor_c_ajax_checker extends Controller_Module
 	
 	private function _check_disposition()
 	{
-		if ($this->user('admin') && $check = post_check(func_get_args()))
+		if ($this->user->admin && $check = post_check(func_get_args()))
 		{
 			array_splice($check, 1, 0, [$this->model()->get_disposition($check['disposition_id'], $theme, $page, $zone)]);
 			

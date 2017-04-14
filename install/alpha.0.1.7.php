@@ -25,6 +25,10 @@ class i_0_1_7 extends Install
 		dir_remove('neofrag');
 
 		$this->db->where('name', 'nf_debug')->delete('nf_settings');
+
+		$this->db	->execute('ALTER TABLE `nf_users` CHANGE `user_id` `id` INT(11) UNSIGNED NOT NULL AUTO_INCREMENT')
+					->execute('RENAME TABLE `nf_users` TO `nf_user`')
+					->execute('RENAME TABLE `nf_users_profiles` TO `nf_user_profile`');
 	}
 }
 

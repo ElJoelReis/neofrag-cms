@@ -26,8 +26,8 @@ class m_user_m_user extends Model
 	 */
 	public function check_login($login, &$password, &$salt)
 	{
-		$user = $this->db	->select('user_id', 'password', 'salt', 'last_activity_date')
-							->from('nf_users')
+		$user = $this->db	->select('id as user_id', 'password', 'salt', 'last_activity_date')
+							->from('nf_user')
 							->where('deleted', FALSE)
 							->where('username', $login, 'OR', 'email', $login)
 							->row();
@@ -50,10 +50,10 @@ class m_user_m_user extends Model
 
 	public function check_user($user_id, $title)
 	{
-		$user = $this->db	->select('user_id', 'username')
-							->from('nf_users')
+		$user = $this->db	->select('id as user_id', 'username')
+							->from('nf_user')
 							->where('deleted', FALSE)
-							->where('user_id', (int)$user_id)
+							->where('id', (int)$user_id)
 							->row();
 
 		if ($user && url_title($user['username']) == $title)
@@ -66,11 +66,11 @@ class m_user_m_user extends Model
 	{
 		if ($user_id === NULL)
 		{
-			$user_id = $this->user('user_id');
+			$user_id = $this->user->id;
 		}
 		
-		$this->db	->where('user_id', $user_id)
-					->update('nf_users', [
+		$this->db	->where('id', $user_id)
+					->update('nf_user', [
 						'username' => $username,
 						'email'    => $email
 					]);
@@ -87,14 +87,14 @@ class m_user_m_user extends Model
 			'signature'     => $signature
 		];
 		
-		if ($this->db->select('1')->from('nf_users_profiles')->where('user_id', $user_id)->row())
+		if ($this->db->select('1')->from('nf_user_profile')->where('user_id', $user_id)->row())
 		{
 			$this->db	->where('user_id', $user_id)
-						->update('nf_users_profiles', $data);
+						->update('nf_user_profile', $data);
 		}
 		else
 		{
-			$this->db->insert('nf_users_profiles', array_merge($data, [
+			$this->db->insert('nf_user_profile', array_merge($data, [
 				'user_id' => $user_id
 			]));
 		}
@@ -107,15 +107,15 @@ class m_user_m_user extends Model
 		$this->db	->where('user_id', $user_id)
 					->delete('nf_users_groups');
 		
-		$this->db	->where('user_id', $user_id)
-					->update('nf_users', [
+		$this->db	->where('id', $user_id)
+					->update('nf_user', [
 						'admin' => FALSE
 					]);
 		
 		if (in_array('admins', $groups))
 		{
-			$this->db	->where('user_id', $user_id)
-						->update('nf_users', [
+			$this->db	->where('id', $user_id)
+						->update('nf_user', [
 							'admin' => TRUE
 						]);
 		}
@@ -136,8 +136,8 @@ class m_user_m_user extends Model
 
 	public function update_password($password)
 	{
-		$this->db	->where('user_id', $this->user('user_id'))
-					->update('nf_users', [
+		$this->db	->where('id', $this->user->id)
+					->update('nf_user', [
 						'password' => $this->password->encrypt($password.($salt = unique_id())),
 						'salt'     => $salt
 					]);
@@ -174,11 +174,11 @@ class m_user_m_user extends Model
 
 	public function get_user_profile($user_id)
 	{
-		return $this->db->select('u.user_id', 'u.username', 'u.email', 'u.registration_date', 'u.last_activity_date', 'u.admin', 'u.language', 'u.deleted', 'up.avatar', 'up.sex', 'up.first_name', 'up.last_name', 'up.signature', 'up.date_of_birth', 'up.location', 'up.website', 'up.quote', 'MAX(s.last_activity) > DATE_SUB(NOW(), INTERVAL 5 MINUTE) as online')
-						->from('nf_users u')
-						->join('nf_users_profiles up', 'u.user_id = up.user_id')
-						->join('nf_sessions       s',  'u.user_id = s.user_id')
-						->where('u.user_id', $user_id)
+		return $this->db->select('u.id as user_id', 'u.username', 'u.email', 'u.registration_date', 'u.last_activity_date', 'u.admin', 'u.language', 'u.deleted', 'up.avatar', 'up.sex', 'up.first_name', 'up.last_name', 'up.signature', 'up.date_of_birth', 'up.location', 'up.website', 'up.quote', 'MAX(s.last_activity) > DATE_SUB(NOW(), INTERVAL 5 MINUTE) as online')
+						->from('nf_user u')
+						->join('nf_user_profile up', 'u.id = up.user_id')
+						->join('nf_sessions       s',  'u.id = s.user_id')
+						->where('u.id', $user_id)
 						->where('u.deleted', FALSE)
 						->row();
 	}
@@ -187,7 +187,7 @@ class m_user_m_user extends Model
 	{
 		return $this->db	->select('s.session_id', 'u.username')
 							->from('nf_sessions s')
-							->join('nf_users u', 'u.user_id = s.user_id')
+							->join('nf_user u', 'u.id = s.user_id')
 							->where('s.session_id', $session_id)
 							->where('u.deleted', FALSE)
 							->row();
@@ -195,9 +195,9 @@ class m_user_m_user extends Model
 
 	public function get_sessions()
 	{
-		return $this->db->select('u.user_id', 'u.username', 's.session_id', 's.ip_address', 's.host_name', 's.last_activity', 's.user_data', 's.remember_me')
+		return $this->db->select('u.id as user_id', 'u.username', 's.session_id', 's.ip_address', 's.host_name', 's.last_activity', 's.user_data', 's.remember_me')
 						->from('nf_sessions s')
-						->join('nf_users u', 'u.user_id = s.user_id AND u.deleted = "0"')
+						->join('nf_user u', 'u.id = s.user_id AND u.deleted = "0"')
 						->where('s.last_activity > DATE_SUB(NOW(), INTERVAL 5 MINUTE)')
 						->where('s.is_crawler', FALSE)
 						->order_by('s.last_activity DESC')
@@ -206,10 +206,10 @@ class m_user_m_user extends Model
 
 	public function get_members()
 	{
-		return $this->db->select('u.user_id', 'u.username', 'u.email', 'u.registration_date', 'u.last_activity_date', 'u.admin', 'u.language', 'u.deleted', 'up.avatar', 'up.sex', 'MAX(s.last_activity) > DATE_SUB(NOW(), INTERVAL 5 MINUTE) as online')
-						->from('nf_users u')
-						->join('nf_users_profiles up', 'u.user_id = up.user_id')
-						->join('nf_sessions       s',  'u.user_id = s.user_id')
+		return $this->db->select('u.id as user_id', 'u.username', 'u.email', 'u.registration_date', 'u.last_activity_date', 'u.admin', 'u.language', 'u.deleted', 'up.avatar', 'up.sex', 'MAX(s.last_activity) > DATE_SUB(NOW(), INTERVAL 5 MINUTE) as online')
+						->from('nf_user u')
+						->join('nf_user_profile up', 'u.id = up.user_id')
+						->join('nf_sessions       s',  'u.id = s.user_id')
 						->where('u.deleted', FALSE)
 						->group_by('u.username')
 						->order_by('u.username')

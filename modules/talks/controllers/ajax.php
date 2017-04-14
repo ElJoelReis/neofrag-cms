@@ -42,7 +42,7 @@ class m_talks_c_ajax extends Controller_Module
 		{
 			$this->db->insert('nf_talks_messages', [
 				'talk_id' => $talk_id,
-				'user_id' => $this->user('user_id'),
+				'user_id' => $this->user->id,
 				'message' => utf8_htmlentities($message)
 			]);
 		}

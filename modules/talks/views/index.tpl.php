@@ -41,7 +41,7 @@ foreach ($data['messages'] as $i => $message)
 ?>
 	<div class="media-body<?php if ($media == 'right') echo ' text-right'; ?>">
 		<?php
-			if (($this->user() && $this->user('user_id') == $message['user_id']) || $this->access('talks', 'delete', $message['talk_id']))
+			if (($this->user->id && $this->user->id == $message['user_id']) || $this->access('talks', 'delete', $message['talk_id']))
 			{
 				echo '<div class="pull-'.($media == 'right' ? 'left' : 'right').'">'.$this->button_delete('ajax/talks/delete/'.$message['message_id']).'</div>';
 			}

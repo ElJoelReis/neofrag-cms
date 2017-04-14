@@ -311,8 +311,8 @@ class m_user_c_admin extends Controller_Module
 
 		if ($this->form->is_valid())
 		{
-			$this->db	->where('user_id', $user_id)
-						->update('nf_users', ['deleted' => TRUE]);
+			$this->db	->where('id', $user_id)
+						->update('nf_user', ['deleted' => TRUE]);
 
 			$this->db	->where('user_id', $user_id)
 						->delete('nf_sessions');

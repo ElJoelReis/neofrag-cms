@@ -24,7 +24,7 @@ class m_contact_c_index extends Controller_Module
 	{
 		$rules = [];
 		
-		if (!$this->user())
+		if (!$this->user->id)
 		{
 			$rules['email'] = [
 				'label' => $this->lang('email'),
@@ -55,12 +55,12 @@ class m_contact_c_index extends Controller_Module
 		if ($this->form->is_valid($post))
 		{
 			$this	->email
-					->from($this->user() ? $this->user('email') : $post['email'])
+					->from($this->user->id ? $this->user->email : $post['email'])
 					->to($this->config->nf_contact)
 					->subject($this->lang('contact').' :: '.$post['subject'])
 					->message('default', [
 						'content' => function() use ($post){
-							return bbcode($post['message']).($this->user() ? '<br /><br /><br />'.$this->user->link() : '');
+							return bbcode($post['message']).($this->user->id ? '<br /><br /><br />'.$this->user->link() : '');
 						}
 					])
 					->send();

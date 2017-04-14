@@ -54,7 +54,7 @@
 		<?php
 		if (!empty($data['show_details']) && $data['list_participants'] && $data['location']):
 			foreach ($data['list_participants'] as $participant):
-				if ($this->user('admin') || ($participant['user_id'] == $this->user('user_id'))): ?>
+				if ($this->user->admin || ($participant['user_id'] == $this->user->id)): ?>
 					<div style="padding-top: 5px;"><?php if (($location = explode("\n", $data['location']))) echo '<li>'.$this->label(current($location), 'fa-map-marker')->popover_if(count($location) > 1, bbcode($data['location'])).'</li>'; ?></div>
 					<?php
 					break;

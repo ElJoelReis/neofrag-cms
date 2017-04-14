@@ -108,11 +108,11 @@ class m_recruits_c_checker extends Controller_Module
 	
 	public function _candidacy($candidacy_id, $title)
 	{
-		if ($this->user())
+		if ($this->user->id)
 		{
 			if ($candidacy = $this->model()->check_candidacy($candidacy_id, $title))
 			{
-				if ($this->user('user_id') == $candidacy['user_id'])
+				if ($this->user->id == $candidacy['user_id'])
 				{
 					return $candidacy;
 				}

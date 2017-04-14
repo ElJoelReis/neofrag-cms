@@ -39,7 +39,7 @@ class m_events_c_admin extends Controller_Module
 							[
 								'content' => [
 									function($data){
-										return $this->user('admin') ? $this->button_access($data['type_id'], 'type') : NULL;
+										return $this->user->admin ? $this->button_access($data['type_id'], 'type') : NULL;
 									},
 									function($data){
 										return $this->is_authorized('modify_events_type') ? $this->button_update('admin/events/types/'.$data['type_id'].'/'.url_title($data['title'])) : NULL;

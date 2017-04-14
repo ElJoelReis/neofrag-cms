@@ -94,7 +94,7 @@ class Form extends Library
 	
 	public function add_captcha()
 	{
-		if (!$this->user())
+		if (!$this->user->id)
 		{
 			$this->_display_captcha = $this->captcha->is_ok();
 		}

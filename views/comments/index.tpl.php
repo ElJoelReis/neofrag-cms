@@ -6,12 +6,12 @@
 		<?php
 			$actions = [];
 			
-			if ($this->user() && $data['parent_id'] == NULL)
+			if ($this->user->id && $data['parent_id'] == NULL)
 			{
 				$actions[] = '<a class="comment-reply" href="#" data-comment-id="'.$data['comment_id'].'">'.icon('fa-mail-reply').' '.$this->lang('reply').'</a>';
 			}
 			
-			if ($this->user('admin') || ($this->user() && $this->user('user_id') == $data['user_id']))
+			if ($this->user->admin || ($this->user->id && $this->user->id == $data['user_id']))
 			{
 				$actions[] = $this->button_delete('ajax/comments/delete/'.$data['comment_id']);
 			}

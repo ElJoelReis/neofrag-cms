@@ -45,7 +45,7 @@ class File extends Library
 				
 				$this->db	->where('file_id', $file_id)
 							->update('nf_files', [
-								'user_id' => $this->user() ? $this->user('user_id') : NULL,
+								'user_id' => $this->user() ? $this->user->id : NULL,
 								'path'    => $filename,
 								'name'    => $var ? $files['name'][$var] : $files['name']
 							]);
@@ -64,7 +64,7 @@ class File extends Library
 	public function add($path, $name)
 	{
 		return $this->db->insert('nf_files', [
-			'user_id' => $this->user() ? $this->user('user_id') : NULL,
+			'user_id' => $this->user() ? $this->user->id : NULL,
 			'path'    => $path,
 			'name'    => $name
 		]);

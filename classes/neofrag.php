@@ -41,7 +41,7 @@ abstract class NeoFrag
 
 	static public function live_editor()
 	{
-		if (($live_editor = post('live_editor')) && NeoFrag()->user('admin'))
+		if (($live_editor = post('live_editor')) && NeoFrag()->user->admin)
 		{
 			NeoFrag()->session->set('live_editor', $live_editor);
 			return $live_editor;

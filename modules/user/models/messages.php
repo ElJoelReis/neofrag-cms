@@ -26,11 +26,11 @@ class m_user_m_messages extends Model
 		
 		if ($box == 'inbox' || $box == 'archives')
 		{
-			$this->db->having('SUM(IF(mr2.user_id <> '.$this->user('user_id').', 1, 0))');
+			$this->db->having('SUM(IF(mr2.user_id <> '.$this->user->id.', 1, 0))');
 		}
 		else if ($box == 'sent')
 		{
-			$this->db->having('SUM(IF(mr2.user_id = '.$this->user('user_id').', 1, 0)) = COUNT(mr2.user_id)');
+			$this->db->having('SUM(IF(mr2.user_id = '.$this->user->id.', 1, 0)) = COUNT(mr2.user_id)');
 		}
 
 		$messages = $this->db	->select('m.message_id', 'm.title', 'UNIX_TIMESTAMP(mr.date) as date')
@@ -38,7 +38,7 @@ class m_user_m_messages extends Model
 								->join('nf_users_messages_recipients r',   'r.message_id   = m.message_id'.($box != 'sent' ? ' AND r.deleted = "'.(int)($box == 'archives').'"' : ''), 'INNER')
 								->join('nf_users_messages_replies    mr',  'mr.reply_id    = m.last_reply_id')
 								->join('nf_users_messages_replies    mr2', 'mr2.message_id = m.message_id', 'INNER')
-								->where('r.user_id', $this->user('user_id'))
+								->where('r.user_id', $this->user->id)
 								->group_by('m.message_id')
 								->get();
 		
@@ -49,7 +49,7 @@ class m_user_m_messages extends Model
 				$message['unread'] = (bool)$this->db->select('1')
 													->from('nf_users_messages_recipients r')
 													->where('r.message_id', $message['message_id'])
-													->where('r.user_id', $this->user('user_id'))
+													->where('r.user_id', $this->user->id)
 													->where('r.date', NULL, 'OR', 'UNIX_TIMESTAMP(r.date) <', $message['date'])
 													->row();
 			}
@@ -69,9 +69,9 @@ class m_user_m_messages extends Model
 			{
 				$last_user = $this->db	->select('r.user_id', 'u.username', 'up.avatar', 'up.sex')
 										->from('nf_users_messages_recipients r')
-										->join('nf_users                     u',  'r.user_id = u.user_id')
-										->join('nf_users_profiles            up', 'r.user_id = up.user_id')
-										->where('u.user_id <>', $this->user('user_id'))
+										->join('nf_user                      u',  'r.user_id = u.id')
+										->join('nf_user_profile            up', 'r.user_id = up.user_id')
+										->where('u.id <>', $this->user->id)
 										->where('r.message_id', $message['message_id'])
 										->order_by('u.username')
 										->limit(1)
@@ -81,9 +81,9 @@ class m_user_m_messages extends Model
 			{
 				$last_user = $this->db	->select('mr.user_id', 'u.username', 'up.avatar', 'up.sex')
 										->from('nf_users_messages_replies mr')
-										->join('nf_users                  u',  'mr.user_id = u.user_id')
-										->join('nf_users_profiles         up', 'mr.user_id = up.user_id')
-										->where('u.user_id <>', $this->user('user_id'))
+										->join('nf_user                   u',  'mr.user_id = u.id')
+										->join('nf_user_profile         up', 'mr.user_id = up.user_id')
+										->where('u.id <>', $this->user->id)
 										->where('mr.message_id', $message['message_id'])
 										->order_by('mr.reply_id DESC')
 										->limit(1)
@@ -111,14 +111,14 @@ class m_user_m_messages extends Model
 						->from('nf_users_messages            m')
 						->join('nf_users_messages_recipients r',  'r.message_id  = m.message_id', 'INNER')
 						->where('m.message_id', $message_id)
-						->where('r.user_id', $this->user('user_id'))
+						->where('r.user_id', $this->user->id)
 						->row();
 	}
 
 	public function get_replies($message_id)
 	{
 		$this->db	->where('message_id', $message_id)
-					->where('user_id', $this->user('user_id'))
+					->where('user_id', $this->user->id)
 					->update('nf_users_messages_recipients', [
 						'date' => now()
 					]);
@@ -126,8 +126,8 @@ class m_user_m_messages extends Model
 		return $this->db->select('mr.reply_id', 'mr.message_id', 'mr.message', 'UNIX_TIMESTAMP(mr.date) as date', 'mr.user_id', 'u.username', 'up.avatar', 'up.sex')
 						->from('nf_users_messages_replies mr')
 						->join('nf_users_messages         m',  'mr.message_id = m.message_id')
-						->join('nf_users                  u',  'mr.user_id    = u.user_id')
-						->join('nf_users_profiles         up', 'mr.user_id    = up.user_id')
+						->join('nf_user                   u',  'mr.user_id    = u.id')
+						->join('nf_user_profile         up', 'mr.user_id    = up.user_id')
 						->where('m.message_id', $message_id)
 						->order_by('mr.date ASC')
 						->get();
@@ -137,7 +137,7 @@ class m_user_m_messages extends Model
 	{
 		$reply_id = $this->db->insert('nf_users_messages_replies', [
 			'message_id' => $message_id,
-			'user_id'    => $this->user('user_id'),
+			'user_id'    => $this->user->id,
 			'message'    => $message
 		]);
 
@@ -155,8 +155,8 @@ class m_user_m_messages extends Model
 	public function insert_message($recipients, $title, $message, $auto = FALSE)
 	{
 		$recipients = array_diff(array_unique(array_map(function($a){
-			return (int)$this->db->select('user_id')->from('nf_users')->where('deleted', FALSE)->where('username', $a)->row();
-		}, explode(';', $recipients)), SORT_NUMERIC), [$user_id = $this->user('user_id')]);
+			return (int)$this->db->select('id')->from('nf_user')->where('deleted', FALSE)->where('username', $a)->row();
+		}, explode(';', $recipients)), SORT_NUMERIC), [$user_id = $this->user->id]);
 
 		if ($recipients)
 		{
@@ -167,7 +167,7 @@ class m_user_m_messages extends Model
 
 			$reply_id = $this->db	->insert('nf_users_messages_replies', [
 										'message_id' => $message_id,
-										'user_id'  => $author_id = $auto ? $this->config->nf_welcome_user_id : $this->user('user_id'),
+										'user_id'  => $author_id = $auto ? $this->config->nf_welcome_user_id : $this->user->id,
 										'message'  => $message
 									]);
 		

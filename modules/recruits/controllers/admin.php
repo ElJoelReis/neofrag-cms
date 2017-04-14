@@ -83,7 +83,7 @@ class m_recruits_c_admin extends Controller_Module
 								[
 									'content' => [
 										function($data){
-											return $this->user('admin') ? $this->button_access($data['recruit_id'], 'recruit') : NULL;
+											return $this->user->admin ? $this->button_access($data['recruit_id'], 'recruit') : NULL;
 										},
 										function($data){
 											return $this->is_authorized('modify_recruit') ? $this->button_update('admin/recruits/'.$data['recruit_id'].'/'.url_title($data['title'])) : NULL;
@@ -611,7 +611,7 @@ class m_recruits_c_admin extends Controller_Module
 
 		$user_vote = $this->db	->from('nf_recruits_candidacies_votes')
 								->where('candidacy_id', $candidacy_id)
-								->where('user_id', $this->user('user_id'))
+								->where('user_id', $this->user->id)
 								->row();
 
 		$vote_form = $this	->form
@@ -640,7 +640,7 @@ class m_recruits_c_admin extends Controller_Module
 		{
 			if ($user_vote)
 			{
-				$this->model()->update_vote($this->user('user_id'),	
+				$this->model()->update_vote($this->user->id,	
 											$candidacy_id,
 											$post['vote'],
 											$post['comment']);
@@ -768,7 +768,7 @@ class m_recruits_c_admin extends Controller_Module
 
 				$reply_id = $this->db	->insert('nf_users_messages_replies', [
 											'message_id' => $message_id,
-											'user_id'    => $this->user('user_id'),
+											'user_id'    => $this->user->id,
 											'message'    => $message
 										]);
 			
@@ -778,12 +778,12 @@ class m_recruits_c_admin extends Controller_Module
 								'last_reply_id' => $reply_id
 							]);
 
-				foreach (array_unique([$this->user('user_id'), $candidacy['user_id']]) as $user_id)
+				foreach (array_unique([$this->user->id, $candidacy['user_id']]) as $user_id)
 				{
 					$this->db->insert('nf_users_messages_recipients', [
 						'user_id'    => $user_id,
 						'message_id' => $message_id,
-						'date'       => $user_id == $this->user('user_id') ? now() : NULL
+						'date'       => $user_id == $this->user->id ? now() : NULL
 					]);
 				}
 			}
@@ -791,11 +791,11 @@ class m_recruits_c_admin extends Controller_Module
 			if ($this->config->recruits_send_mail && $candidacy['email'])
 			{
 				$this->load	->email
-							->from($this->config->nf_contact ? $this->config->nf_contact : $this->user('email'))
+							->from($this->config->nf_contact ? $this->config->nf_contact : $this->user->email)
 							->to($candidacy['email'])
 							->subject('Candidature :: '.$candidacy['title'])
 							->message('default', [
-								'content' => bbcode($reply).($this->user() ? '<br /><br /><br />'.$this->user->link() : '')
+								'content' => bbcode($reply).($this->user->id ? '<br /><br /><br />'.$this->user->link() : '')
 							])
 							->send();
 			}

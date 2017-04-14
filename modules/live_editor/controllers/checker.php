@@ -22,7 +22,7 @@ class m_live_editor_c_checker extends Controller_Module
 {
 	public function index()
 	{
-		if (!$this->user('admin'))
+		if (!$this->user->admin)
 		{
 			throw new Exception(NeoFrag::UNAUTHORIZED);
 		}

@@ -20,15 +20,21 @@ along with NeoFrag. If not, see <http://www.gnu.org/licenses/>.
 
 class m_contact extends Module
 {
-	public $title         = '{lang contact}';
-	public $description   = '';
-	public $icon          = 'fa-envelope-o';
-	public $link          = 'http://www.neofrag.com';
-	public $author        = 'Michaël Bilcot <michael.bilcot@neofrag.com>';
-	public $licence       = 'http://www.neofrag.com/license.html LGPLv3';
-	public $version       = 'Alpha 0.1';
-	public $nf_version    = 'Alpha 0.1';
-	public $path          = __FILE__;
+	protected function __info()
+	{
+		return [
+			'title'       => $this->lang('contact'),
+			'description' => '',
+			'icon'        => 'fa-envelope-o',
+			'link'        => 'https://neofr.ag',
+			'author'      => 'Michaël BILCOT & Jérémy VALENTIN <contact@neofrag.com>',
+			'license'     => 'LGPLv3 <https://neofr.ag/license>',
+			'version'     => '1.0',
+			'depends'     => [
+				'neofrag' => 'Alpha 0.1.7'
+			]
+		];
+	}
 }
 
 /*

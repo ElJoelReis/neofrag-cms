@@ -20,18 +20,24 @@ along with NeoFrag. If not, see <http://www.gnu.org/licenses/>.
 
 class w_partners extends Widget
 {
-	public $title       = 'Partenaires';
-	public $description = '';
-	public $link        = 'http://www.neofrag.com';
-	public $author      = 'Michaël Bilcot <michael.bilcot@neofrag.com>';
-	public $licence     = 'http://www.neofrag.com/license.html LGPLv3';
-	public $version     = 'Alpha 0.1.4';
-	public $nf_version  = 'Alpha 0.1.4';
-	public $path        = __FILE__;
-	public $types       = [
-		'index'  => 'Affichage horizontal en slider',
-		'column' => 'Affichage simple en colonne'
-	];
+	protected function __info()
+	{
+		return [
+			'title'       => 'Partenaires',
+			'description' => '',
+			'link'        => 'https://neofr.ag',
+			'author'      => 'Michaël BILCOT & Jérémy VALENTIN <contact@neofrag.com>',
+			'license'     => 'LGPLv3 <https://neofr.ag/license>',
+			'version'     => '1.0',
+			'depends'     => [
+				'neofrag' => 'Alpha 0.1.7'
+			],
+			'types'       => [
+				'index'  => 'Affichage horizontal en slider',
+				'column' => 'Affichage simple en colonne'
+			]
+		];
+	}
 }
 
 /*

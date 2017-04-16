@@ -18,10 +18,27 @@ You should have received a copy of the GNU Lesser General Public License
 along with NeoFrag. If not, see <http://www.gnu.org/licenses/>.
 **************************************************************************/
 
-abstract class Model2 extends NeoFrag
+abstract class Model2 extends NeoFrag implements Loadable
 {
 	static protected $_schemas = [];
 	static protected $_objects = [];
+
+	static public function __load($loader, $name, $type, $settings, &$class, &$path, &$construct)
+	{
+		$class     = preg_replace('/^o_/', '', get_class($loader->caller)).'_m_'.$name;
+		$path      = $loader->paths2('models', $name.'.php');
+		$construct = [$name, $loader];
+
+		if (in_string('modules/', $path))
+		{
+			$class = preg_replace('/^w_/', 'm_', $class);
+		}
+		else if (preg_match('_^(?:overrides/)?models_', $path))
+		{
+			$class = 'NeoFrag_m_'.$name;
+			$construct[1] = NeoFrag();
+		}
+	}
 
 	static protected function __schema()
 	{

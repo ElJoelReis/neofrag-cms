@@ -95,7 +95,7 @@ class m_access_c_admin extends Controller_Module
 	{
 		$this	->title($module->get_title())
 				->subtitle($title ?: $this->lang('permissions_management'))
-				->icon($module->icon)
+				->icon($module->info()->icon)
 				->css('access')
 				->js('access')
 				->css('table')

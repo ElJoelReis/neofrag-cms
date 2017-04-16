@@ -20,20 +20,22 @@ along with NeoFrag. If not, see <http://www.gnu.org/licenses/>.
 
 class m_access extends Module
 {
-	public $title         = '{lang permissions}';
-	public $description   = '';
-	public $icon          = 'fa-unlock-alt';
-	public $link          = 'http://www.neofrag.com';
-	public $author        = 'Michaël Bilcot <michael.bilcot@neofrag.com>';
-	public $licence       = 'http://www.neofrag.com/license.html LGPLv3';
-	public $version       = 'Alpha 0.1';
-	public $nf_version    = 'Alpha 0.1';
-	public $path          = __FILE__;
-	public $admin         = FALSE;
-	public $routes        = [
-		'admin/edit/{url_title*}'  => '_edit',
-		'admin/([a-z0-9-]*?){pages}' => 'index'
-	];
+	protected function __info()
+	{
+		return [
+			'title'       => $this->lang('permissions'),
+			'description' => '',
+			'icon'        => 'fa-unlock-alt',
+			'link'        => 'https://neofr.ag',
+			'author'      => 'Michaël BILCOT & Jérémy VALENTIN <contact@neofrag.com>',
+			'license'     => 'LGPLv3 <https://neofr.ag/license>',
+			'admin'       => FALSE,
+			'routes'      => [
+				'admin/edit/{url_title*}'  => '_edit',
+				'admin/([a-z0-9-]*?){pages}' => 'index'
+			]
+		];
+	}
 }
 
 /*

@@ -28,7 +28,7 @@ class m_live_editor_c_index extends Controller_Module
 
 		$modules = [];
 		
-		foreach ($this->addons->get_modules() as $module)
+		foreach ($this->model2('addon')->get('module') as $module)
 		{
 			if ($module->controller('index') && !in_array($module->name, ['live_editor', 'pages']))
 			{

@@ -35,7 +35,7 @@ class m_live_editor_c_ajax extends Controller_Module
 		{
 			if ($module = $this->module($url[0]))
 			{
-				if (!empty($module->routes) && ($method = $module->get_method(array_slice($url, 1, -1), TRUE)))
+				if (!empty($module->info()->routes) && ($method = $module->get_method(array_slice($url, 1, -1), TRUE)))
 				{
 					$url = [$url[0], $method, '*'];
 				}

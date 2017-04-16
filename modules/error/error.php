@@ -20,17 +20,16 @@ along with NeoFrag. If not, see <http://www.gnu.org/licenses/>.
 
 class m_error extends Module
 {
-	public $title         = '{lang error}';
-	public $description   = '';
-	public $icon          = 'fa-exclamation-triangle';
-	public $link          = 'http://www.neofrag.com';
-	public $author        = 'Michaël Bilcot <michael.bilcot@neofrag.com>';
-	public $licence       = 'http://www.neofrag.com/license.html LGPLv3';
-	public $version       = 'Alpha 0.1';
-	public $nf_version    = 'Alpha 0.1';
-	public $path          = __FILE__;
-	
-	public function load()
+	protected function __info()
+	{
+		return [
+			'title'       => 'Erreur',
+			'description' => '',
+			'icon'        => 'fa-users'
+		];
+	}
+
+	public function __init()
 	{
 		$this->url->extension = '';
 	}

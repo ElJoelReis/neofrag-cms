@@ -20,23 +20,29 @@ along with NeoFrag. If not, see <http://www.gnu.org/licenses/>.
 
 class m_partners extends Module
 {
-	public $title       = 'Partenaires';
-	public $description = '';
-	public $icon        = 'fa-star-o';
-	public $link        = 'http://www.neofrag.com';
-	public $author      = 'Michaël Bilcot <michael.bilcot@neofrag.com>';
-	public $licence     = 'http://www.neofrag.com/license.html LGPLv3';
-	public $version     = 'Alpha 0.1';
-	public $nf_version  = 'Alpha 0.1.4';
-	public $path        = __FILE__;
-	public $admin       = TRUE;
-	public $routes      = [
-		//Index
-		'{id}/{url_title}'        => '_partner',
+	protected function __info()
+	{
+		return [
+			'title'       => 'Partenaires',
+			'description' => '',
+			'icon'        => 'fa-star-o',
+			'link'        => 'https://neofr.ag',
+			'author'      => 'Michaël BILCOT & Jérémy VALENTIN <contact@neofrag.com>',
+			'license'     => 'LGPLv3 <https://neofr.ag/license>',
+			'admin'       => TRUE,
+			'version'     => '1.0',
+			'depends'     => [
+				'neofrag' => 'Alpha 0.1.7'
+			],
+			'routes'      => [
+				//Index
+				'{id}/{url_title}'        => '_partner',
 
-		//Admin
-		'admin/{id}/{url_title*}' => '_edit'
-	];
+				//Admin
+				'admin/{id}/{url_title*}' => '_edit'
+			]
+		];
+	}
 
 	public function settings()
 	{

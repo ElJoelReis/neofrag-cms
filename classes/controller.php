@@ -18,19 +18,35 @@ You should have received a copy of the GNU Lesser General Public License
 along with NeoFrag. If not, see <http://www.gnu.org/licenses/>.
 **************************************************************************/
 
-abstract class Controller extends NeoFrag
+abstract class Controller extends NeoFrag implements Loadable
 {
-	public $load;
+	static public function __load($loader, $name, $type, $settings, &$class, &$path, &$construct)
+	{
+		$class     = preg_replace('/^o_/', '', get_class($loader->caller)).'_c_'.$name;
+		$path      = $loader->paths2('controllers', $name.'.php');
+		$construct = [$name, $loader->caller];
+	}
 
-	public function __construct($name)
+	public $load;
+	public $name;
+	public $module;
+	public $widget;
+
+	public function __construct($name, $caller)
 	{
 		$this->name = $name;
+		$this->load = $caller->load;
+
+		if (is_a($caller, $type = 'module') || is_a($caller, $type = 'widget'))
+		{
+			$this->$type = $caller;
+		}
 	}
 
 	public function has_method($name)
 	{
 		$r = new ReflectionClass($this);
-		
+
 		try
 		{
 			$method = $r->getMethod($name);
@@ -38,7 +54,7 @@ abstract class Controller extends NeoFrag
 		}
 		catch (ReflectionException $error)
 		{
-			
+
 		}
 	}
 
@@ -59,7 +75,7 @@ abstract class Controller extends NeoFrag
 		ob_start();
 		$result = call_user_func_array([$this, $name], $args);
 		$output = ob_get_clean();
-		
+
 		if (!empty($result))
 		{
 			echo $output;

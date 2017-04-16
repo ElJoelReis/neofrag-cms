@@ -85,6 +85,10 @@ spl_autoload_register(function($name){
 	{
 		require_once $file;
 	}
+	else if (file_exists($file = $dir.'classes/addons/'.$name.'.php'))
+	{
+		require_once $file;
+	}
 });
 
 function load($name)
@@ -136,8 +140,9 @@ $NeoFrag = load('loader', [
 		'overrides/themes/default',
 		'themes/default'
 	],
-	'authenticators' => [
-		'authenticators'
+	'addons' => [
+		'overrides/addons',
+		'addons',
 	],
 	'config' => [
 		'overrides/config',
@@ -150,10 +155,6 @@ $NeoFrag = load('loader', [
 	'helpers' => [
 		'overrides/helpers',
 		'helpers'
-	],
-	'lang' => [
-		'overrides/lang',
-		'lang'
 	],
 	'libraries' => [
 		'overrides/libraries',
@@ -183,7 +184,7 @@ $NeoFrag = load('loader', [
 	]
 ]);
 
-$NeoFrag->modules = $NeoFrag->themes = $NeoFrag->widgets = $NeoFrag->authenticators = $NeoFrag->css = $NeoFrag->js = $NeoFrag->js_load = $NeoFrag->modals = [];
+$NeoFrag->css = $NeoFrag->js = $NeoFrag->js_load = $NeoFrag->modals = [];
 
 $NeoFrag->module = $NeoFrag->theme = NULL;
 
@@ -216,7 +217,6 @@ foreach([
 			'url',
 			'config',
 			'access',
-			'addons',
 			'session',
 			'user',
 			'groups',

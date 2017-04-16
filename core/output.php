@@ -36,7 +36,8 @@ class Output extends Core
 		}
 		else
 		{
-			$this->load->theme = $this->theme($this->url->admin ? 'admin' : ($this->config->nf_default_theme ?: 'default'))->load();
+			$this->load->theme = $this->theme($this->url->admin ? 'admin' : ($this->config->nf_default_theme ?: 'default'));
+			$this->load->theme->__init();
 
 			$this->data['module_actions'] = $this->load->module->get_actions();
 
@@ -49,9 +50,9 @@ class Output extends Core
 				$this->data['page_title'] = $this->data['module_title'].' :: '.$this->config->nf_name;
 			}
 
-			if (!empty($this->load->module->icon) || !empty($this->data['module_icon']))
+			if (!empty($this->load->module->info()->icon) || !empty($this->data['module_icon']))
 			{
-				$this->data['module_title'] = icon(!empty($this->data['module_icon']) ? $this->data['module_icon'] : $this->load->module->icon).' '.$this->data['module_title'];
+				$this->data['module_title'] = icon(!empty($this->data['module_icon']) ? $this->data['module_icon'] : $this->load->module->info()->icon).' '.$this->data['module_title'];
 			}
 
 			notifications();

@@ -28,6 +28,7 @@ class Debug extends Core
 	const STRICT     = 5;
 
 	private $_debugbar = FALSE;
+	private $_i18n     = FALSE;
 	private $_log      = [];
 	private $_timeline = [];
 
@@ -38,6 +39,11 @@ class Debug extends Core
 		if (isset($config['debugbar']) && in_array($config['debugbar'], [1, 2]))
 		{
 			$this->_debugbar = $config['debugbar'];
+		}
+
+		if (isset($config['i18n']))
+		{
+			$this->_i18n = $config['i18n'];
 		}
 
 		set_error_handler(function($errno, $errstr, $errfile, $errline){
@@ -197,7 +203,12 @@ class Debug extends Core
 	{
 		return $this->_debugbar == 2 || ($this->_debugbar == 1 && (!isset($this->user) || $this->user->admin));
 	}
-	
+
+	public function i18n()
+	{
+		return $this->_i18n;
+	}
+
 	public function display()
 	{
 		if ($this->is_enabled())

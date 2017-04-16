@@ -22,74 +22,48 @@ class m_addons_c_admin extends Controller_Module
 {
 	public function index()
 	{
-		$this	->title($this->lang('addons'))
-				->icon('fa-puzzle-piece')
-				->css('addons')
-				->js('addons')
-				->css('delete')
-				->js('delete')
-				->css('table')
-				->js('table')
-				->js('sortable');
-		
-		return $this->row(
-			$this	->col(
-						$this	->panel()
-								->heading('<div class="pull-right"><small>(max. '.(file_upload_max_size() / 1024 / 1024).' Mo)</small></div>Ajouter un composant', 'fa-plus')
-								->body('<input type="file" id="install-input" class="install" accept=".zip" /><label for="install-input" id="install-input-label"><p>'.icon('fa-upload fa-3x').'</p><span class="legend">Choisissez votre archive</span><br /><small class="text-muted">(format .zip)</small></label>')
-								->footer($this	->button()
-												->title('Installer')
-												->icon('fa-plus')
-												->color('info btn-block install disabled')
-												->outline()),
-						$this	->panel()
-								->heading('Composants du site', 'fa-puzzle-piece')
-								->body($this->view('addons', [
-									'addons' => [
-										'modules' => [
-											'title' => 'Modules',
-											'icon'  => 'fa-edit'
-										],
-										'themes' => [
-											'title' => 'Thèmes',
-											'icon'  => 'fa-tint'
-										],
-										'widgets' => [
-											'title' => 'Widgets',
-											'icon'  => 'fa-cubes'
-										],
-										'languages' => [
-											'title' => 'Langues',
-											'icon'  => 'fa-book'
-										],
-										'authenticators' => [
-											'title' => 'Authentificateurs',
-											'icon'  => 'fa-user-circle'
-										]/*,
-										'smileys' => array(
-											'title' => 'Smileys',
-											'icon'  => 'fa-smile-o'
-										),
-										'bbcodes' => array(
-											'title' => 'BBcodes',
-											'icon'  => 'fa-code'
-										)*/
-									]
-								]), FALSE)
-					)
-					->size('col-md-4 col-lg-3')
-		);
+		$addons = array_filter($this->collection('addon')->get(), function($a){
+			return $a->addon()->__actions();
+		});
+
+		$types = array_count_values(array_map(function($a){
+			return $a->type->id;
+		}, $addons));
+
+		usort($addons, function($a, $b) use ($types){
+			if ($types[$a->type->id] > $types[$b->type->id])
+			{
+				return 1;
+			}
+			else if ($types[$a->type->id] < $types[$b->type->id])
+			{
+				return -1;
+			}
+			else
+			{
+				return str_nat($a, $b, function($a){
+					return $a->type->name.$a->addon()->title();
+				});
+			}
+		});
+
+		return $this->js('mixitup.min')
+					->css('addons')
+					//->js_load('mixitup($("#addons")[0]);')
+					->view('admin', [
+						'addons' => $addons
+					]);
 	}
-	
+
 	public function _module_settings($module)
 	{
 		$this	->title($module->get_title())
 				->subtitle('Configuration')
 				->icon('fa-wrench');
-		
+
 		return $module->settings();
 	}
-	
+
 	public function _module_delete($module)
 	{
 		$this	->title('Confirmation de suppression')
@@ -105,16 +79,16 @@ class m_addons_c_admin extends Controller_Module
 
 		echo $this->form->display();
 	}
-	
+
 	public function _theme_settings($theme, $controller)
 	{
 		$this	->title($theme->get_title())
 				->subtitle($this->lang('theme_customize'))
 				->icon('fa-paint-brush');
-		
+
 		return $controller->index($theme);
 	}
-	
+
 	public function _theme_delete($theme)
 	{
 		$this	->title('Confirmation de suppression')

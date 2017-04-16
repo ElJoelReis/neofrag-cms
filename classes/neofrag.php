@@ -202,38 +202,24 @@ abstract class NeoFrag
 		return $this;
 	}
 
-	public function module($name, $force = FALSE)
+	public function module($name)
 	{
-		return $this->_load($name, 'module', 'm_'.$name, NeoFrag()->modules, $name.'/'.$name, $force, function() use ($name){
-			return $this->addons->is_enabled($name, 'module') && $this->access($name, 'module_access');
-		});
+		return NeoFrag()->model2('addon')->get('module', $name);
 	}
 
-	public function theme($name, $force = FALSE)
+	public function theme($name)
 	{
-		return $this->_load($name, 'theme', 't_'.$name, NeoFrag()->themes, $name.'/'.$name, $force);
+		return NeoFrag()->model2('addon')->get('theme', $name);
 	}
 
-	public function widget($name, $force = FALSE)
+	public function widget($name)
 	{
-		return $this->_load($name, 'widget', 'w_'.$name, NeoFrag()->widgets, $name.'/'.$name, $force, function() use ($name){
-			return $this->addons->is_enabled($name, 'widget');
-		});
+		return NeoFrag()->model2('addon')->get('widget', $name);
 	}
 
 	public function controller($name)
 	{
-		if ($controller = $this->_load($name, 'controller', preg_replace('/^o_/', '', get_class($this->load->caller)).'_c_'.$name, $this->load->controllers))
-		{
-			$controller->load = $this->load;
-
-			if (is_a($this->load->caller, $type = 'module') || is_a($this->load->caller, $type = 'widget'))
-			{
-				$controller->$type = $this->load->caller;
-			}
-		}
-
-		return $controller;
+		return $this->load($name, 'controller');
 	}
 
 	public function model($name = NULL)
@@ -243,12 +229,7 @@ abstract class NeoFrag
 			$name = $this->load->caller->name;
 		}
 
-		if ($model = $this->_load($name, 'model', preg_replace('/^o_/', '', get_class($this->load->caller)).'_m_'.$name, $this->load->models))
-		{
-			$model->load = $this->load;
-		}
-
-		return $model;
+		return $this->load($name, 'model');
 	}
 
 	public function model2($name = '', $id = 0)
@@ -264,17 +245,12 @@ abstract class NeoFrag
 			$name = $this->load->caller->name;
 		}
 
-		if (($model = $this->_load($name, 'model', preg_replace('/^o_/', '', get_class($this->load->caller)).'_m_'.$name, $this->load->models, NULL, FALSE, NULL, [$name, $this->load])))
+		if ($model = $this->load($name, 'model2'))
 		{
 			$model = $model->read($id);
 		}
 
 		return $model;
-	}
-
-	public function authenticator($name, $enabled, $settings = [])
-	{
-		return $this->_load($name, 'authenticator', 'a_'.$name, NeoFrag()->authenticators, NULL, FALSE, NULL, [$name, $enabled, $settings]);
 	}
 
 	public function helper($name)
@@ -337,111 +313,13 @@ abstract class NeoFrag
 			}, $name);
 		}
 
-		foreach ($paths = $this->load->paths('lang') as $dir)
+		$paths = $this->load != NeoFrag() ? $this->load->paths('lang') : [];
+
+		foreach ($this->config->langs as $lang)
 		{
-			foreach ($this->config->langs as $language)
+			if (($result = call_user_func_array([$lang, 'get'], array_merge([$paths], func_get_args()))) !== FALSE)
 			{
-				if (!check_file($path = $dir.'/'.$language.'.php'))
-				{
-					continue;
-				}
-
-				if (isset($this->load->langs[$path]))
-				{
-					$lang = $this->load->langs[$path];
-				}
-				else if (isset(NeoFrag()->load->langs[$path]))
-				{
-					$lang = NeoFrag()->load->langs[$path];
-				}
-				else
-				{
-					$lang = [];
-
-					include $path;
-
-					$this->load->langs[$path] = $lang;
-				}
-
-				if (isset($lang[$name]))
-				{
-					if (is_array($lang[$name]))
-					{
-						return $lang[$name];
-					}
-					else
-					{
-						$locale = $lang[$name];
-
-						if (!$args)
-						{
-							$translation = $locale;
-						}
-						else
-						{
-							if (in_string('|', $locale))
-							{
-								$n      = NULL;
-								$locale = explode('|', $locale);
-								$count  = count($locale);
-
-								foreach ($locale as $i => &$l)
-								{
-									if (preg_match('/^\{(\d+?)\}|\[(\d+?),(\d+?|Inf)\]/', $l, $match))
-									{
-										$n = end($match);
-
-										if ($n == 'Inf')
-										{
-											break;
-										}
-									}
-									else if ($n === NULL)
-									{
-										$l = '[0,1]'.$l;
-										$n = 1;
-									}
-									else if ($i == $count - 1)
-									{
-										$l = '['.++$n.',Inf]'.$l;
-									}
-									else
-									{
-										$l = '{'.++$n.'}'.$l;
-									}
-
-									unset($l);
-								}
-
-								foreach ($locale as $l)
-								{
-									if (preg_match('/^\{(\d+?)\}(.*)/', $l, $match) && $args[0] == $match[1])
-									{
-										$locale = $match[2];
-										unset($args[0]);
-										break;
-									}
-									else if (preg_match('/^\[(\d+?),(\d+?|Inf)\](.*)/', $l, $match) && $args[0] >= $match[1] && ($match[2] == 'Inf' || $args[0] <= $match[2]))
-									{
-										$locale = $match[3];
-										unset($args[0]);
-										break;
-									}
-								}
-							}
-
-							array_unshift($args, $locale);
-							$translation = call_user_func_array('sprintf', $args);
-						}
-
-						/*if ($this->debug->is_enabled())
-						{
-							$translation = '❤ '.$translation.' ❤';
-						}*/
-
-						return $translation;
-					}
-				}
+				return $result;
 			}
 		}
 
@@ -460,88 +338,6 @@ abstract class NeoFrag
 		NeoFrag()->debug->timeline($output, $this->__debug->time[0], $this->__debug->time[1]);
 
 		return $output;
-	}
-
-	private function _load($name, $type, $class, &$objects, $filename = NULL, $force = FALSE, $is_enabled = NULL, $constructor = [])
-	{
-		if (($force && !empty($objects[$name])) || (!$force && array_key_exists($name, $objects)))
-		{
-			return $objects[$name];
-		}
-		
-		if (!$force && is_callable($is_enabled) && !$is_enabled())
-		{
-			return $objects[$name] = NULL;
-		}
-
-		if ($filename === NULL)
-		{
-			$filename = $name;
-		}
-
-		$paths = $this->load->paths($type.'s');
-		
-		$object = NULL;
-
-		while (list(, $dir) = each($paths))
-		{
-			if (!check_file($path = $dir.'/'.$filename.'.php', $force))
-			{
-				continue;
-			}
-
-			if ($type == 'model')
-			{
-				if (in_string('modules/', $dir))
-				{
-					$class = preg_replace('/^w_/', 'm_', $class);
-				}
-				else if (preg_match('_^(?:overrides/)?models_', $dir))
-				{
-					$class = preg_replace('/^._(.+?)_/', 'NeoFrag_', $class);
-
-					if (isset(NeoFrag()->models[$name]))
-					{
-						$object = NeoFrag()->models[$name];
-						break;
-					}
-					else
-					{
-						$constructor[1] = NeoFrag();
-					}
-				}
-			}
-
-			if (in_string('overrides/', $path))
-			{
-				while (list(, $dir) = each($paths))
-				{
-					if (in_string('overrides/', $o_path = $dir.'/'.$filename.'.php') || !check_file($o_path))
-					{
-						continue;
-					}
-
-					include_once $o_path;
-
-					break;
-				}
-
-				$class = 'o_'.$class;
-			}
-
-			include_once $path;
-
-			$object = call_user_func_array('load', array_merge([$class], $constructor ?: [$name, $type]));
-			
-			break;
-		}
-
-		if (!$force)
-		{
-			$objects[$name] = $object;
-		}
-
-		return $object;
 	}
 }
 

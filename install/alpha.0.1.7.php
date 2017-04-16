@@ -34,7 +34,27 @@ class i_0_1_7 extends Install
 					->execute('ALTER TABLE `nf_comments` CHANGE `comment_id` `id` INT(11) UNSIGNED NOT NULL AUTO_INCREMENT')
 					->execute('RENAME TABLE `nf_comments` TO `nf_comment`')
 					->execute('ALTER TABLE nf_talks CONVERT TO CHARACTER SET utf8')
-					->execute('ALTER TABLE nf_talks_messages CONVERT TO CHARACTER SET utf8');
+					->execute('ALTER TABLE nf_talks_messages CONVERT TO CHARACTER SET utf8')
+					->execute('CREATE TABLE `nf_addon_type` (
+					  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+					  `name` varchar(100) NOT NULL,
+					  PRIMARY KEY (`id`)
+					) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8');
+					->execute('CREATE TABLE `nf_addon` (
+					  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+					  `type_id` int(11) unsigned DEFAULT NULL,
+					  `name` varchar(100) NOT NULL,
+					  `data` text,
+					  PRIMARY KEY (`id`),
+					  UNIQUE KEY `name` (`name`,`type_id`),
+					  KEY `type_id` (`type_id`),
+					  CONSTRAINT `nf_addon_ibfk_1` FOREIGN KEY (`type_id`) REFERENCES `nf_addon_type` (`id`)
+					) ENGINE=InnoDB DEFAULT CHARSET=utf8');
+
+		foreach ($this->db->from('nf_settings_addons')->get() as $addon)
+		{
+			
+		}
 	}
 }
 

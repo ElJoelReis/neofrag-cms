@@ -31,6 +31,7 @@ class Loader extends NeoFrag
 	public $caller;
 
 	protected $_paths;
+	protected $_objects = [];
 
 	public function __construct()
 	{
@@ -50,18 +51,92 @@ class Loader extends NeoFrag
 	{
 		$paths = is_a($this->_paths, 'closure') ? call_user_func_array($this->_paths, []) : $this->_paths;
 
-		if (NeoFrag() != $this)
+		if ($type)
 		{
-			$paths = array_merge_recursive($paths, NeoFrag()->paths());
+			if (!isset($paths[$type]))
+			{
+				if (NeoFrag() == $this)
+				{
+					return [];
+				}
+				else
+				{
+					return NeoFrag()->paths($type);
+				}
+			}
+
+			if (NeoFrag() != $this)
+			{
+				$paths[$type] = array_merge_recursive($paths[$type], NeoFrag()->paths($type));
+			}
+
+			return $paths[$type];
+		}
+		else
+		{
+			if (NeoFrag() != $this)
+			{
+				$paths = array_merge_recursive($paths, NeoFrag()->paths());
+			}
+
+			return $paths;
+		}
+	}
+
+	public function paths2($type, $file)
+	{
+		foreach ($this->paths($type) as $dir)
+		{
+			if (check_file($path = $dir.'/'.$file))
+			{
+				return $path;
+			}
 		}
 
-		return $type ? $paths[$type] : $paths;
+		return FALSE;
+	}
+
+	public function __invoke($name, $type = 'addon', $settings = [])
+	{
+		$name = strtolower($name);
+		$type = strtolower($type);
+
+		if (isset($this->_objects[$type]) && array_key_exists($name, $this->_objects[$type]))
+		{
+			return $this->_objects[$type][$name];
+		}
+
+		$object = NULL;
+
+		if (is_a($type, 'Loadable', TRUE))
+		{
+			$class     = '';
+			$path      = '';
+			$construct = [];
+
+			forward_static_call_array([$type, '__load'], [$this->load, $name, $type, $settings, &$class, &$path, &$construct]);
+
+			if ($path)
+			{
+				if (in_string('overrides/', $path) && check_file($o_path = preg_replace('_.*overrides/_', '', $path)))
+				{
+					include_once $o_path;
+					$class = 'o_'.$class;
+				}
+
+				include_once $path;
+
+				$object = call_user_func_array('load', array_merge([$class], $construct));
+			}
+		}
+
+		return $this->_objects[$type][$name] = $object;
 	}
 
 	public function debugbar($title = 'Loader')
 	{
 		$output = '<span class="label label-info">'.$title.(property_exists($this, 'override') && $this->override ? ' '.icon('fa-code-fork') : '').'</span>';
-		
+
 		$this->debug->timeline($output, $this->__debug->time[0], $this->__debug->time[1]);
 
 		$output = '	<ul>
@@ -69,16 +144,16 @@ class Loader extends NeoFrag
 							'.$output;
 
 		foreach ([
-			[isset($this->modules) ? $this->modules : [], 'Modules',     'default', function($a){ return $a->debug('default'); }],
-			[isset($this->themes)  ?  $this->themes : [], 'Themes',      'primary', function($a){ return $a->debug('primary'); }],
-			[isset($this->widgets) ? $this->widgets : [], 'Widgets',     'success', function($a){ return $a->debug('success'); }],
-			[$this->libraries,                            'Libraries',   'info',    function($a){ return $a->debug('info'); }],
-			[$this->helpers,                              'Helpers',     'warning', function($a){ return '<span class="label label-warning">'.$a[1].'</span>'; }],
-			[$this->controllers,                          'Controllers', 'danger',  function($a){ return $a->debug('danger'); }],
-			[$this->models,                               'Models',      'default', function($a){ return $a->debug('default'); }],
-			[$this->views,                                'Views',       'primary', function($a){ return '<span class="label label-primary">'.$a[1].'</span>'; }],
-			[$this->forms,                                'Forms',       'success', function($a){ return '<span class="label label-success">'.$a[1].'</span>'; }],
-			[$this->langs,                                'Locales',     'info',    function($a, $b){ return '<span class="label label-info">'.$b.'</span>'; }]
+			[isset($this->_objects['module']) ? $this->_objects['module'] : [], 'Modules',     'default', function($a){ return $a->debug('default'); }],
+			[isset($this->_objects['theme'])  ? $this->_objects['theme']  : [], 'Themes',      'primary', function($a){ return $a->debug('primary'); }],
+			[isset($this->_objects['widget']) ? $this->_objects['widget'] : [], 'Widgets',     'success', function($a){ return $a->debug('success'); }],
+			[$this->libraries,                                                  'Libraries',   'info',    function($a){ return $a->debug('info'); }],
+			[$this->helpers,                                                    'Helpers',     'warning', function($a){ return '<span class="label label-warning">'.$a[1].'</span>'; }],
+			[$this->controllers,                                                'Controllers', 'danger',  function($a){ return $a->debug('danger'); }],
+			[$this->models,                                                     'Models',      'default', function($a){ return $a->debug('default'); }],
+			[$this->views,                                                      'Views',       'primary', function($a){ return '<span class="label label-primary">'.$a[1].'</span>'; }],
+			[$this->forms,                                                      'Forms',       'success', function($a){ return '<span class="label label-success">'.$a[1].'</span>'; }],
+			[$this->langs,                                                      'Locales',     'info',    function($a, $b){ return '<span class="label label-info">'.$b.'</span>'; }]
 		] as $vars)
 		{
 			list($objects, $name, $class, $callback) = $vars;

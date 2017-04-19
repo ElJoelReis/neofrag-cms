@@ -268,7 +268,7 @@ class m_user_c_index extends Controller_Module
 					if ($data['avatar'])
 					{
 						$this	->network($data['avatar'])
-								->stream($file = $this->file->filename('members', 'tmp'));
+								->stream($file = $this->model2('file')->static_filename('members', 'tmp'));
 
 						$name = pathinfo($data['avatar'], PATHINFO_BASENAME);
 
@@ -280,7 +280,7 @@ class m_user_c_index extends Controller_Module
 							{
 								rename($file, $file = str_replace('.tmp', '.'.$extensions[$type], $file));
 								image_resize($file, 250, 250);
-								$data['avatar'] = $this->file->add($file, $name);
+								$data['avatar'] = $this->model2('file')->static_add($file, $name);
 							}
 							else
 							{

@@ -101,10 +101,10 @@ function path($file, $file_type = '', $paths = [])
 		
 		if (!isset($paths[$file]))
 		{
-			$paths[$file] = NeoFrag()->db->select('path')
-												->from('nf_files')
-												->where('file_id', $file)
-												->row();
+			$paths[$file] = NeoFrag()->db	->select('path')
+											->from('nf_file')
+											->where('id', $file)
+											->row();
 		}
 		
 		return $paths[$file] ? url($paths[$file]) : '';

@@ -117,8 +117,8 @@ class m_gallery_m_gallery extends Model
 	
 	public function delete_gallery($gallery_id)
 	{
-		$this->file->delete($this->db->select('image_id')->from('nf_gallery')->where('gallery_id', $gallery_id)->row());
-		
+		$this->model2('file', $this->db->select('image_id')->from('nf_gallery')->where('gallery_id', $gallery_id)->row())->delete();
+
 		foreach ($this->db->select('image_id')->from('nf_gallery_images')->where('gallery_id', $gallery_id)->get() as $image_id)
 		{
 			$this->delete_image($image_id);
@@ -159,8 +159,8 @@ class m_gallery_m_gallery extends Model
 	public function add_image($file_id, $gallery_id, $title, $description = '')
 	{
 		$file = $this->db	->select('name', 'path')
-							->from('nf_files')
-							->where('file_id', $file_id)
+							->from('nf_file')
+							->where('id', $file_id)
 							->row();
 		
 		dir_create('upload/gallery/thumbnails', 'upload/gallery/originals');
@@ -176,8 +176,8 @@ class m_gallery_m_gallery extends Model
 		$title = empty($title) ? $file['name'] : $title;
 		
 		$this->db->insert('nf_gallery_images', [
-			'thumbnail_file_id' => $this->file->add($thumbnail, $title),
-			'original_file_id'  => $this->file->add($original, $title),
+			'thumbnail_file_id' => $this->model2('file')->static_add($thumbnail, $title),
+			'original_file_id'  => $this->model2('file')->static_add($original, $title),
 			'file_id'           => $file_id,
 			'gallery_id'        => $gallery_id,
 			'title'             => $title,
@@ -196,7 +196,10 @@ class m_gallery_m_gallery extends Model
 	
 	public function delete_image($image_id)
 	{
-		$this->file->delete($this->db->select('file_id', 'thumbnail_file_id', 'original_file_id')->from('nf_gallery_images')->where('image_id', $image_id)->row());
+		foreach ($this->db->select('file_id', 'thumbnail_file_id', 'original_file_id')->from('nf_gallery_images')->where('image_id', $image_id)->row() as $file_id)
+		{
+			$this->model2('file', $file_id)->delete();
+		}
 	}
 	
 	public function check_category($category_id, $name, $lang = 'default')
@@ -274,8 +277,8 @@ class m_gallery_m_gallery extends Model
 	
 	public function delete_category($category_id)
 	{
-		$this->file->delete($this->db->select('image_id')->from('nf_gallery_categories')->where('category_id', $category_id)->row());
-		
+		$this->model2('file', $this->db->select('image_id')->from('nf_gallery_categories')->where('category_id', $category_id)->row())->delete();
+
 		foreach ($this->db->select('gallery_id')->from('nf_gallery')->where('category_id', $category_id)->get() as $gallery_id)
 		{
 			$this->delete_gallery($gallery_id);

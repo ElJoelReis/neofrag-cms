@@ -395,7 +395,7 @@ class Db extends Core
 			$result .= '	<tr>
 								<td class="col-md-1"><b>'.($i + 1).'</b><div class="pull-right"><span class="label label-'.(!empty($request->error) ? 'danger' : 'success').'">'.round($request->time * 1000, 3).' ms</span></div></td>
 								<td class="col-md-8">'.$request->debug().'</td>
-								<td class="col-md-3 text-right">'.$request->file.' <code>'.$request->line.'</code></td>
+								<td class="col-md-3 text-right">'.(isset($request->file) ? $request->file.' <code>'.$request->line : '').'</code></td>
 							</tr>';
 
 			$total_time   += $request->time;
@@ -433,16 +433,12 @@ class Db extends Core
 
 		$this->_request = [];
 		
-		if (1)//TODO if debug mode
+		if (isset(NeoFrag()->debug) && NeoFrag()->debug->is_enabled())
 		{
 			self::$_requests[] = $request;
 		}
 
-		if (!empty($request->error))
-		{
-			trigger_error($request->error.' ['.$request->sql.']'.(!empty($request->bind) ? ' '.json_encode($request->bind) : '').' in '.$request->file.' on line '.$request->line, E_USER_WARNING);
-		}
-		else if ($callback)
+		if (empty($request->error) && $callback)
 		{
 			return $request->$callback();
 		}

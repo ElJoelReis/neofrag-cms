@@ -18,17 +18,9 @@ You should have received a copy of the GNU Lesser General Public License
 along with NeoFrag. If not, see <http://www.gnu.org/licenses/>.
 **************************************************************************/
 
-class i_0_1_7 extends Install
-{
-	public function up()
-	{
-		dir_remove('neofrag');
-
-		$this->db->where('name', 'nf_debug')->delete('nf_settings');
-	}
-}
+$debug['debugbar'] = 0;
 
 /*
 NeoFrag Alpha 0.1.7
-./install/alpha.0.1.7.php
+./config/debug.php
 */

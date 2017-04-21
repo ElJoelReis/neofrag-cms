@@ -27,12 +27,18 @@ class Debug extends Core
 	const DEPRECATED = 4;
 	const STRICT     = 5;
 
+	private $_debugbar = FALSE;
 	private $_log      = [];
 	private $_timeline = [];
 
-	public function __construct()
+	public function __construct($config = [])
 	{
 		parent::__construct();
+
+		if (isset($config['debugbar']) && in_array($config['debugbar'], [1, 2]))
+		{
+			$this->_debugbar = $config['debugbar'];
+		}
 
 		set_error_handler(function($errno, $errstr, $errfile, $errline){
 			if (in_array($errno, [E_USER_ERROR, E_RECOVERABLE_ERROR]))
@@ -189,7 +195,7 @@ class Debug extends Core
 
 	public function is_enabled()
 	{
-		return isset($this->config) && !empty($this->config->nf_debug) && ($this->config->nf_debug == 2 || ($this->user('admin') && $this->config->nf_debug == 1));
+		return $this->_debugbar == 2 || ($this->_debugbar == 1 && (!isset($this->user) || $this->user('admin')));
 	}
 	
 	public function display()
@@ -206,7 +212,7 @@ class Debug extends Core
 				'tabs' => $tabs = [
 					'console'  => [$this->debug->debugbar($console),              'Console',  'fa-terminal',    $console],
 					'database' => [$this->db->debugbar($database),                'Database', 'fa-database',    $database],
-					'loader'   => [NeoFrag()->debugbar('NeoFrag Loader'), 'Loader',   'fa-puzzle-piece'],
+					'loader'   => [NeoFrag()->debugbar('NeoFrag Loader'),         'Loader',   'fa-puzzle-piece'],
 					'timeline' => [$this->debug->timeline(),                      'Timeline', 'fa-clock-o'],
 					'settings' => [$this->config->debugbar(),                     'Settings', 'fa-cogs'],
 					'session'  => [$this->session->debugbar(),                    'Session',  'fa-flag'],

@@ -106,7 +106,7 @@ function load($name)
 
 	$class = new ReflectionClass($name);
 
-	if ($debug = NeoFrag() === NULL || !isset(NeoFrag()->user) || !isset(NeoFrag()->debug) || NeoFrag()->debug->is_enabled())
+	if ($debug = NeoFrag() === NULL || !isset(NeoFrag()->debug) || NeoFrag()->debug->is_enabled())
 	{
 		$memory = memory_get_usage();
 		$time   = microtime(TRUE);

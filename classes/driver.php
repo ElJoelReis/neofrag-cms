@@ -37,17 +37,35 @@ abstract class Driver
 		{
 			static::check_foreign_keys($check_foreign_keys = FALSE);
 		}
-		
-		$time = microtime(TRUE);
-		
+
+		if ($debug = isset(NeoFrag()->debug) && NeoFrag()->debug->is_enabled())
+		{
+			$time = microtime(TRUE);
+		}
+
 		$request->build_sql()->execute();
-		
-		$request->time = microtime(TRUE) - $time;
-		
-		$backtrace = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS, 3);
-		$request->file = relative_path($backtrace[2]['file']);
-		$request->line = $backtrace[2]['line'];
-		
+
+		if ($debug)
+		{
+			$request->time = microtime(TRUE) - $time;
+		}
+
+		if ($debug || !empty($request->error))
+		{
+			$backtrace = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS, 5);
+
+			if (isset($backtrace[4]['file']))
+			{
+				$request->file = relative_path($backtrace[4]['file']);
+				$request->line = $backtrace[4]['line'];
+			}
+		}
+
+		if (!empty($request->error))
+		{
+			trigger_error($request->error.' ['.$request->sql.']'.(!empty($request->bind) ? ' '.json_encode($request->bind) : '').' in '.$request->file.' on line '.$request->line, E_USER_WARNING);
+		}
+
 		return $request;
 	}
 

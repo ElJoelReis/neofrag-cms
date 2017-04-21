@@ -34,7 +34,6 @@ abstract class Authenticator extends NeoFrag
 
 	public function __construct($name, $enabled, $settings = [])
 	{
-		$this->load      = NeoFrag();
 		$this->name      = $name;
 		$this->_enabled  = $enabled;
 		$this->_settings = $settings;
@@ -84,11 +83,11 @@ abstract class Authenticator extends NeoFrag
 			$this->_settings[$key] = !empty($settings[$key]) ? $settings[$key] : '';
 		}
 
-		$this->db	->where('name', $this->name)
-					->update('nf_settings_authenticators', [
-						'settings'   => serialize($this->_settings),
-						'is_enabled' => $this->is_setup()
-					]);
+		NeoFrag()->db	->where('name', $this->name)
+						->update('nf_settings_authenticators', [
+							'settings'   => serialize($this->_settings),
+							'is_enabled' => $this->is_setup()
+						]);
 	}
 
 	public function config()

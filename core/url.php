@@ -25,8 +25,6 @@ class Url extends Core
 
 	public function __construct()
 	{
-		parent::__construct();
-
 		$this->_const['host']              = (!empty($_SERVER['HTTPS']) ? 'https://' : 'http://').$_SERVER['HTTP_HOST'];
 		$this->_const['base']              = str_replace(basename($_SERVER['SCRIPT_NAME']), '', $_SERVER['SCRIPT_NAME']);
 		$this->_const['request']           = preg_replace('#^'.preg_quote($this->_const['base'], '#').'#', '', parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH)) ?: 'index';

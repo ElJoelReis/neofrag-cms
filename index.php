@@ -104,7 +104,7 @@ function load($name)
 		$override = TRUE;
 	}
 
-	$r = new ReflectionClass($name);
+	$class = new ReflectionClass($name);
 
 	if ($debug = NeoFrag() === NULL || !isset(NeoFrag()->user) || !isset(NeoFrag()->debug) || NeoFrag()->debug->is_enabled())
 	{
@@ -112,12 +112,14 @@ function load($name)
 		$time   = microtime(TRUE);
 	}
 
-	$object = $r->newInstanceArgs($args);
+	$object = $class->newInstanceArgs($args);
 	
 	if ($debug)
 	{
-		$object->memory = [$memory, memory_get_usage()];
-		$object->time   = [$time, microtime(TRUE)];
+		$object->__debug = (object)[
+			'memory' => [$memory, memory_get_usage()],
+			'time'   => [$time, microtime(TRUE)]
+		];
 
 		if ($override)
 		{

@@ -434,9 +434,9 @@ abstract class NeoFrag
 		$output = NeoFrag()	->label($title ?: (isset($this->name) ? $this->name : get_class($this)))
 							->icon_if(property_exists($this, 'override') && $this->override, 'fa-code-fork')
 							->color($color)
-							->tooltip(icon('fa-clock-o').' '.round(($this->time[1] - $this->time[0]) * 1000, 2).' ms&nbsp;&nbsp;&nbsp;'.icon('fa-cogs').' '.ceil(($this->memory[1] - $this->memory[0]) / 1024).' kB');
+							->tooltip(icon('fa-clock-o').' '.round(($this->__debug->time[1] - $this->__debug->time[0]) * 1000, 2).' ms&nbsp;&nbsp;&nbsp;'.icon('fa-cogs').' '.ceil(($this->__debug->memory[1] - $this->__debug->memory[0]) / 1024).' kB');
 
-		NeoFrag()->debug->timeline($output, $this->time[0], $this->time[1]);
+		NeoFrag()->debug->timeline($output, $this->__debug->time[0], $this->__debug->time[1]);
 
 		return $output;
 	}

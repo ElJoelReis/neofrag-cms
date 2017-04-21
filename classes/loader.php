@@ -62,7 +62,7 @@ class Loader extends NeoFrag
 	{
 		$output = '<span class="label label-info">'.$title.(property_exists($this, 'override') && $this->override ? ' '.icon('fa-code-fork') : '').'</span>';
 		
-		$this->debug->timeline($output, $this->time[0], $this->time[1]);
+		$this->debug->timeline($output, $this->__debug->time[0], $this->__debug->time[1]);
 
 		$output = '	<ul>
 						<li>
@@ -70,7 +70,7 @@ class Loader extends NeoFrag
 
 		foreach ([
 			[isset($this->modules) ? $this->modules : [], 'Modules',     'default', function($a){ return $a->debug('default'); }],
-			[isset($this->themes) ?  $this->themes : [],  'Themes',      'primary', function($a){ return $a->debug('primary'); }],
+			[isset($this->themes)  ?  $this->themes : [], 'Themes',      'primary', function($a){ return $a->debug('primary'); }],
 			[isset($this->widgets) ? $this->widgets : [], 'Widgets',     'success', function($a){ return $a->debug('success'); }],
 			[$this->libraries,                            'Libraries',   'info',    function($a){ return $a->debug('info'); }],
 			[$this->helpers,                              'Helpers',     'warning', function($a){ return '<span class="label label-warning">'.$a[1].'</span>'; }],

@@ -20,104 +20,104 @@ along with NeoFrag. If not, see <http://www.gnu.org/licenses/>.
 
 class Db extends Core
 {
-	private $_request   = [];
-	private $_connected = FALSE;
-	private $_driver;
+	static protected $_drivers  = [];
+	static protected $_requests = [];
 
-	public  $requests   = [];
+	protected $_request = [];
+
+	static protected function _connect($config)
+	{
+		if (!isset($config['hostname'], $config['username'], $config['password'], $config['database']))
+		{
+			return;
+		}
+
+		if (!isset($config['type']))
+		{
+			$config['type'] = 'default';
+		}
+
+		if (isset(self::$_drivers[$config['type']]))
+		{
+			return;
+		}
+
+		if (!isset($config['driver']))
+		{
+			$config['driver'] = 'mysqli';
+		}
+
+		if (file_exists($path = 'classes/drivers/'.$config['driver'].'.php'))
+		{
+			require_once $path;
+
+			$driver = 'Driver_'.$config['driver'];
+
+			if ($connection = $driver::connect($config['hostname'], $config['username'], $config['password'], $config['database']))
+			{
+				if (is_string($connection))
+				{
+					$config['driver'] = $connection;
+					self::_connect($config);
+					return;
+				}
+				else
+				{
+					if (isset($config['init']) && is_a($config['init'], 'closure'))
+					{
+						call_user_func($config['init'], $connection);
+					}
+
+					self::$_drivers[$config['type']] = $driver;
+
+					NeoFrag()->debug->log('DB '.$config['type'].' '.$config['hostname'].' '.$config['database'].' ('.$config['driver'].')');
+				}
+			}
+		}
+		else
+		{
+			NeoFrag()->debug->log('Pilote de base de données introuvable : '.$path, Debug::WARNING);
+		}
+	}
 
 	public function __construct($config)
 	{
 		parent::__construct();
+		
+		array_walk($config, [$this, '_connect']);
 
-		if (is_array($config))
-		{
-			if (isset($config[0]) && is_array($config[0]))
-			{
-				while (!$this->_connected && list(, $conf) = each($config))
-				{
-					$this->_connect($conf);
-				}
-			}
-			else
-			{
-				$this->_connect($config);
-			}
-		}
-
-		if (!$this->_connected)
+		if (empty(self::$_drivers['default']))
 		{
 			header('HTTP/1.0 503 Service Unavailable');
 			exit('Database error check config/db.php');
 		}
 	}
 
-	private function _connect($config)
+	public function __invoke($type = NULL)
 	{
-		if (!isset($config['hostname'], $config['username'], $config['password'], $config['database']))
+		$db = clone $this;
+
+		if ($type)
 		{
-			$this->debug->log('Fichier de configuration mal formé : ./config/db.php', Debug::WARNING);
-			return;
+			$db->_request['type'] = $type;
 		}
 
-		if (check_file($path = 'classes/drivers/'.$config['driver'].'.php'))
-		{
-			require_once $path;
-
-			$driver = $this->_driver = 'Driver_'.$config['driver'];
-
-			if ($connect = $driver::connect($config['hostname'], $config['username'], $config['password'], $config['database']))
-			{
-				if (is_string($connect))
-				{
-					$config['driver'] = $connect;
-					return $this->_connect($config);
-				}
-				else
-				{
-					if (isset($config['init']) && is_a($config['init'], 'closure'))
-					{
-						call_user_func($config['init'], $connect);
-					}
-
-					$this->_connected = TRUE;
-					$this->debug->log('DB '.$config['hostname'].' '.$config['database'].' ('.$config['driver'].')');
-				}
-			}
-		}
-		else
-		{
-			$this->debug->log('Pilote de base de données introuvable : ./databases/'.$config['driver'].'.php', Debug::WARNING);
-		}
+		return $db;
 	}
 
-	private function _request($callback = NULL)
+	public function __debugInfo()
 	{
-		$driver = $this->_driver;
-
-		$request = $this->requests[] = $driver::query($this->_request);
-		
-		$this->_request = [];
-		
-		if (!empty($request->error))
-		{
-			trigger_error($request->error.' ['.$request->sql.']'.(!empty($request->bind) ? ' '.json_encode($request->bind) : '').' in '.$request->file.' on line '.$request->line, E_USER_WARNING);
-		}
-		else if ($callback)
-		{
-			return $request->$callback();
-		}
+		return $this->_request;
 	}
-	
+
 	public function get_info($var = NULL)
 	{
 		static $info;
 		
 		if ($info === NULL)
 		{
-			$driver = $this->_driver;
-			$info = array_merge($driver::get_info(), [
-				'driver' => strtolower(preg_replace('/^Driver_/', '', $driver))
+			$info = array_merge($this->_driver('get_info'), [
+				'driver' => strtolower($this->_driver())
 			]);
 		}
 
@@ -135,8 +135,7 @@ class Db extends Core
 		
 		if ($size === NULL)
 		{
-			$driver = $this->_driver;
-			$size = $driver::get_size();
+			$size = $this->_driver('get_size');
 		}
 
 		return $size;
@@ -144,8 +143,7 @@ class Db extends Core
 
 	public function escape_string($string)
 	{
-		$driver = $this->_driver;
-		return $driver::escape_string($string);
+		return $this->_driver('escape_string', $string);
 	}
 
 	public function select()
@@ -272,7 +270,7 @@ class Db extends Core
 		$this->_request['insert'] = $table;
 		$this->_request['values'] = $data;
 
-		return $this->_request('last_id');
+		return $this->_exec('last_id');
 	}
 
 	public function replace($table, $data)
@@ -280,7 +278,7 @@ class Db extends Core
 		$this->_request['replace'] = $table;
 		$this->_request['values']  = $data;
 
-		return $this->_request('last_id');
+		return $this->_exec('last_id');
 	}
 
 	public function update($table, $data)
@@ -288,7 +286,7 @@ class Db extends Core
 		$this->_request['update'] = $table;
 		$this->_request['set']    = $data;
 
-		return $this->_request('affected_rows');
+		return $this->_exec('affected_rows');
 	}
 
 	public function delete($table, $multi_tables = '')
@@ -300,12 +298,12 @@ class Db extends Core
 			$this->_request['multi_tables'] = $multi_tables;
 		}
 
-		return $this->_request('affected_rows');
+		return $this->_exec('affected_rows');
 	}
 
 	public function get($cast = TRUE)
 	{
-		$get = $this->_request('get');
+		$get = $this->_exec('get');
 
 		if ($cast && !empty($get) && count($get[0]) == 1)
 		{
@@ -320,7 +318,7 @@ class Db extends Core
 
 	public function row($cast = TRUE)
 	{
-		$row = $this->_request('row');
+		$row = $this->_exec('row');
 
 		if ($cast && count($row) == 1)
 		{
@@ -332,57 +330,50 @@ class Db extends Core
 
 	public function results()
 	{
-		return $this->_request('results');
+		return $this->_exec('results');
 	}
 
 	public function fetch($results)
 	{
-		$driver = $this->_driver;
-		return $driver::fetch($results);
+		return $this->_driver('fetch', $results);
 	}
 
 	public function free($results)
 	{
-		$driver = $this->_driver;
-		return $driver::free($results);
+		return $this->_driver('free', $results);
 	}
 
 	public function lock($tables)
 	{
-		$driver = $this->_driver;
-		$driver::lock($tables);
+		$this->_driver('lock', $tables);
 		return $this;
 	}
 
 	public function unlock($tables)
 	{
-		$driver = $this->_driver;
-		$driver::unlock($tables);
+		$this->_driver('unlock', $tables);
 		return $this;
 	}
 
 	public function tables()
 	{
-		$driver = $this->_driver;
-		return $driver::tables();
+		return $this->_driver('tables');
 	}
 
 	public function table_create($table)
 	{
-		$driver = $this->_driver;
-		return $driver::table_create($table);
+		return $this->_driver('table_create', $table);
 	}
 
 	public function table_columns($table)
 	{
-		$driver = $this->_driver;
-		return $driver::table_columns($table);
+		return $this->_driver('table_columns', $table);
 	}
 
 	public function execute($query)
 	{
 		$this->query($query);
-		$this->_request();
+		$this->_exec();
 		return $this;
 	}
 
@@ -394,17 +385,12 @@ class Db extends Core
 
 	public function debugbar(&$output = '')
 	{
-		if (!$this->_connected)
-		{
-			return '';
-		}
-		
 		$total_time   = 0;
 		$total_errors = 0;
 
 		$result = '<table class="table table-striped">';
 
-		foreach ($this->requests as $i => $request)
+		foreach (self::$_requests as $i => $request)
 		{
 			$result .= '	<tr>
 								<td class="col-md-1"><b>'.($i + 1).'</b><div class="pull-right"><span class="label label-'.(!empty($request->error) ? 'danger' : 'success').'">'.round($request->time * 1000, 3).' ms</span></div></td>
@@ -416,7 +402,7 @@ class Db extends Core
 			$total_errors += (int)!empty($request->error);
 		}
 
-		if (!empty($this->requests))
+		if (!empty(self::$_requests))
 		{
 			$result .= '	<tr>
 								<td><b>Total</b><div class="pull-right"><span class="label label-success">'.round($total_time * 1000, 3).' ms</span></div></td>
@@ -429,6 +415,37 @@ class Db extends Core
 		$output = '<span class="label label-'.($total_errors > 0 ? 'danger' : 'success').'">'.($total_errors ?: $i + 1).'</span>';
 		
 		return $result;
+	}
+
+	protected function _driver()
+	{
+		if (!($args = func_get_args()))
+		{
+			return isset($this->_request['type']) && isset(self::$_drivers[$this->_request['type']]) ? $this->_request['type'] : 'default';
+		}
+
+		return forward_static_call_array([self::$_drivers[$this->_driver()], array_shift($args)], $args);
+	}
+
+	protected function _exec($callback = NULL)
+	{
+		$request = $this->_driver('query', $this->_request);
+
+		$this->_request = [];
+		
+		if (1)//TODO if debug mode
+		{
+			self::$_requests[] = $request;
+		}
+
+		if (!empty($request->error))
+		{
+			trigger_error($request->error.' ['.$request->sql.']'.(!empty($request->bind) ? ' '.json_encode($request->bind) : '').' in '.$request->file.' on line '.$request->line, E_USER_WARNING);
+		}
+		else if ($callback)
+		{
+			return $request->$callback();
+		}
 	}
 }
 

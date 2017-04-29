@@ -113,6 +113,12 @@ class Html extends Library
 		return $this;
 	}
 
+	public function prepend_content($content)
+	{
+		$this->_content = $content.$this->_content;
+		return $this;
+	}
+
 	public function append_content($content)
 	{
 		$this->_content .= $content;

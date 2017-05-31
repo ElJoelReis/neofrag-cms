@@ -24,7 +24,7 @@ class Panel_Pagination extends Panel
 	{
 		if ($pagination = NeoFrag()->module->pagination->get_pagination())
 		{
-			return '<div class="pull-right">'.$pagination.'</div>';
+			return $pagination.'<div class="clearfix"></div>';
 		}
 
 		return '';

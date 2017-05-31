@@ -69,9 +69,9 @@ class m_recruits_c_index extends Controller_Module
 								->body('<div class="text-center">Aucune offre n\'a été publiée pour le moment</div>')
 								->color('info');
 		}
-		else if ($pagination = $this->pagination->get_pagination())
+		else
 		{
-			$panels[] = '<div class="text-right">'.$pagination.'</div>';
+			$panels[] = $this->panel_pagination();
 		}
 
 		return $panels;

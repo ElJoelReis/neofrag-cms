@@ -18,7 +18,7 @@ AddDefaultCharset UTF-8
 	#RewriteCond %{REQUEST_FILENAME} /file1\.php [OR]
 	#RewriteCond %{REQUEST_FILENAME} /file2\.php [OR]
 
-	RewriteCond %{REQUEST_FILENAME} \.(png|jpg|jpeg|gif|swf|eot|svg|ttf|woff|woff2|zip)$
+	RewriteCond %{REQUEST_FILENAME} \.(png|jpg|jpeg|gif|swf|eot|map|svg|ttf|woff|woff2|zip)$
 	RewriteCond %{REQUEST_FILENAME} -f
 	RewriteRule .* - [L,QSA]
 

@@ -37,14 +37,17 @@ class Panel extends Library
 	{
 		$output = '';
 
-		foreach ($this->_heading as $h)
+		if ($this->_heading)
 		{
-			$output .= '<h3 class="panel-title">'.$h.'</h3>';
-		}
+			$headers = $this->_heading;
 
-		if ($output)
-		{
-			$output = '<div class="panel-heading">'.$output.'</div>';
+			$headers[0] = $this	->html('h3')
+								->attr('class', 'panel-title')
+								->content($headers[0]);
+
+			$output = $this	->button
+							->static_footer($headers, 'left')
+							->append_attr('class', 'panel-heading');
 		}
 
 		if ($this->_body)
@@ -52,25 +55,38 @@ class Panel extends Library
 			$output .= $this->_body_tags ? '<div class="panel-body">'.$this->_body.'</div>' : $this->_body;
 		}
 
-		return $this->html()
-					->attr('class', 'panel')
-					->append_attr('class', $this->_style ?: 'panel-default')
-					->content($output)
-					->append_content_if($this->_footer, $this->button->static_footer($this->_footer)->append_attr('class', 'panel-footer'))
-					->__toString();
+		$table = $this	->html()
+						->attr('class', 'panel')
+						->append_attr('class', $this->_style ?: 'panel-default')
+						->content($output)
+						->append_content_if($this->_footer, $this->button->static_footer($this->_footer)->append_attr('class', 'panel-footer'));
+
+		foreach ($this->_data as $key => $value)
+		{
+			$table->attr('data-'.$key, $value);
+		}
+
+		return (string)$table;
 	}
 
 	public function title($label = '', $icon = '', $url = '')
 	{
+		$headers = $this->_heading;
+
 		$this->_heading = [];
-		return call_user_func_array([$this, 'heading'], func_get_args());
+
+		call_user_func_array([$this, 'heading'], func_get_args());
+
+		$this->_heading = array_merge($this->_heading, array_slice($headers, 1));
+
+		return $this;
 	}
 
 	public function heading($label = '', $icon = '', $url = '')
 	{
 		if (func_num_args())
 		{
-			if (!is_a($label, 'Label'))
+			if (!is_a($label, 'Html'))
 			{
 				$label = $this	->button()
 								->title($label)
@@ -99,9 +115,11 @@ class Panel extends Library
 
 	public function footer($footer = '', $align = 'center')
 	{
-		if (!is_a($footer, 'Button'))
+		if (!is_a($footer, 'Html'))
 		{
-			$footer = $this->button()->title($footer)->align($align);
+			$footer = $this	->button()
+							->title($footer)
+							->align($align);
 		}
 
 		$this->_footer[] = $footer;

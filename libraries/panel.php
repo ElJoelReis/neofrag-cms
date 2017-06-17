@@ -22,6 +22,7 @@ class Panel extends Library
 {
 	protected $_heading = [];
 	protected $_footer  = [];
+	protected $_data    = [];
 	protected $_body;
 	protected $_body_tags;
 	protected $_style;
@@ -117,6 +118,20 @@ class Panel extends Library
 	public function style($style)
 	{
 		$this->_style = $style;
+		return $this;
+	}
+
+	public function data($data, $value = '')
+	{
+		if (func_num_args() == 2)
+		{
+			$this->_data[$data] = $value;
+		}
+		else
+		{
+			$this->_data = $data;
+		}
+
 		return $this;
 	}
 

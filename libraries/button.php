@@ -132,12 +132,24 @@ class Button extends Label
 		return $this;
 	}
 
-	public function modal($modal)
+	public function modal($title, $icon = '')
 	{
+		$modal = is_a($title, 'Modal') ? $title : parent::modal($title, $icon);
+
 		return $this->url('#')
 					->data([
 						'toggle' => 'modal',
-						'target' => '#'.$modal->id,
+						'target' => '#'.$modal->id
+					]);
+	}
+
+	public function modal_ajax($url)
+	{
+		NeoFrag()->js('modal');
+
+		return $this->url('#')
+					->data([
+						'modal-ajax' => url($url)
 					]);
 	}
 }

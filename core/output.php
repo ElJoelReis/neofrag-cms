@@ -36,6 +36,8 @@ class Output extends Core
 		}
 		else
 		{
+			$this->load->theme = $this->theme($this->url->admin ? 'admin' : ($this->config->nf_default_theme ?: 'default'))->load();
+
 			$this->data['module_actions'] = $this->load->module->get_actions();
 
 			$this->data = array_merge($this->data, $this->load->module->load->data);

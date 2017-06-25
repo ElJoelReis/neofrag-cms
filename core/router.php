@@ -60,8 +60,6 @@ class Router extends Core
 			}
 		}
 
-		$this->load->theme = $this->theme($this->url->admin ? 'admin' : ($this->config->nf_default_theme ?: 'default'))->load();
-
 		$this->_load($segments);
 		
 		return $this;

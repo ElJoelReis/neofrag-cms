@@ -20,7 +20,7 @@ along with NeoFrag. If not, see <http://www.gnu.org/licenses/>.
 
 class Button_update extends Library
 {
-	public function __invoke($url, $title = '')
+	public function __invoke($url = '', $title = '')
 	{
 		return $this->button()
 					->tooltip($title ?: $this->lang('edit'))

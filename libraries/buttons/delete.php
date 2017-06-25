@@ -20,7 +20,7 @@ along with NeoFrag. If not, see <http://www.gnu.org/licenses/>.
 
 class Button_delete extends Library
 {
-	public function __invoke($url, $title = NULL)
+	public function __invoke($url = '', $title = NULL)
 	{
 		return $this->css('delete')
 					->js('delete')
@@ -29,7 +29,7 @@ class Button_delete extends Library
 					->url($url)
 					->icon('fa-remove')
 					->color('danger')
-					->style('delete')
+					->style_if($url, 'delete')//TODO
 					->compact()
 					->outline();
 	}

@@ -20,7 +20,7 @@ along with NeoFrag. If not, see <http://www.gnu.org/licenses/>.
 
 class Button_submit extends Button
 {
-	public function __invoke($title = '')
+	public function __invoke($title = '', $color = 'primary')
 	{
 		parent::__invoke();
 
@@ -30,7 +30,7 @@ class Button_submit extends Button
 		};
 
 		return $this->title($title ?: $this->lang('save'))
-					->color('primary');
+					->color($color);
 	}
 }
 

@@ -29,8 +29,8 @@ class Table2 extends Library
 
 	public function __invoke($data, $no_data = '', $create_button = TRUE)
 	{
-		$this->_collection    = is_a($data, 'Collection') ? $data : $data->collection();
-		$this->_no_data       = $no_data;
+		$this->_collection = is_a($data, 'Collection') ? $data : $data->collection();
+		$this->_no_data    = $no_data;
 		$this->_create_button = $create_button;
 
 		return $this->save();
@@ -77,6 +77,20 @@ class Table2 extends Library
 								->content($content)
 								->compact()
 		);
+	}
+
+	public function update()
+	{
+		return $this->compact(function($model){
+			return $model->route()->button_update();
+		});
+	}
+
+	public function delete()
+	{
+		return $this->compact(function($model){
+			return $model->route()->button_delete();
+		});
 	}
 
 	public function panel()

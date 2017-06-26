@@ -48,6 +48,11 @@ class Collection extends Library
 		return $this->_db && is_a($result, 'NeoFrag') ? $this : $result;
 	}
 
+	public function model($model = NULL)
+	{
+		return $this->_model;
+	}
+
 	public function get()
 	{
 		$results = [];

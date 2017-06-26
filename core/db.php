@@ -148,8 +148,15 @@ class Db extends Core
 
 	public function select()
 	{
-		$this->_request['select'] = func_get_args();
-		return $this;
+		if ($args = func_get_args())
+		{
+			$this->_request['select'] = $args;
+			return $this;
+		}
+		else if (isset($this->_request['select']))
+		{
+			return $this->_request['select'];
+		}
 	}
 
 	public function from($from)

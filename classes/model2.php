@@ -27,6 +27,10 @@ abstract class Model2 extends NeoFrag
 	{
 	}
 
+	static protected function __route($route)
+	{
+	}
+
 	static protected function field()
 	{
 		return new Field;
@@ -53,8 +57,8 @@ abstract class Model2 extends NeoFrag
 			$this->_model[] = $name;
 		}
 
-		$this->_name = $name;
-		$this->_load = $load;
+		$this->_name  = $name;
+		$this->_load  = $load;
 	}
 
 	public function __isset($name)
@@ -231,6 +235,33 @@ abstract class Model2 extends NeoFrag
 	public function form2()
 	{
 		return $this->_data ? $this->load->form2($this->_name, $this) : $this->load->form2($this->_name);
+	}
+
+	public function route()
+	{
+		$this::__route($route = load('route', $this));
+		return $route;
+	}
+
+	public function url()
+	{
+		$url = [];
+
+		if (isset($this->id))
+		{
+			$url[] = $this->id;
+		}
+
+		if (isset($this->name))
+		{
+			$url[] = $this->name;
+		}
+		else if (isset($this->title))
+		{
+			$url[] = url_title($this->title);
+		}
+
+		return implode('/', $url);
 	}
 
 	public function create()

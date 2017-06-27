@@ -183,6 +183,19 @@ class Output extends Core
 			$a = $this->parse($a, $data);
 		});
 	}
+
+	public function json($output)
+	{
+		if (($output = json_encode($output)) === FALSE)
+		{
+			$output = json_encode([
+				'error' => json_last_error_msg()
+			]);
+		}
+
+		header('Content-Type: application/json; charset=UTF-8');
+		exit($output);
+	}
 }
 
 /*

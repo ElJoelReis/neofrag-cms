@@ -481,11 +481,10 @@ class Table extends Library
 
 		if ($this->_ajax)
 		{
-			header('Content-Type: application/json; charset=UTF-8');
-			exit(json_encode([
+			$this->output->json([
 				'search'  => [],//array_values(array_unique($this->_words)),
 				'content' => $output
-			]));
+			]);
 		}
 		else
 		{

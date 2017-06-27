@@ -25,7 +25,7 @@ class m_comments_m_comments extends Model
 	public function get_comments()
 	{
 		$comments =  $this->db	->select('module_id', 'module', 'count(*) as count')
-												->from('nf_comments')
+												->from('nf_comment')
 												->group_by('module_id', 'module')
 												->get();
 												

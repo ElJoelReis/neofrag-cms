@@ -30,7 +30,9 @@ class i_0_1_7 extends Install
 					->execute('RENAME TABLE `nf_users` TO `nf_user`')
 					->execute('RENAME TABLE `nf_users_profiles` TO `nf_user_profile`')
 					->execute('ALTER TABLE `nf_files` CHANGE `file_id` `id` INT(11) UNSIGNED NOT NULL AUTO_INCREMENT')
-					->execute('RENAME TABLE `nf_files` TO `nf_file`');
+					->execute('RENAME TABLE `nf_files` TO `nf_file`')
+					->execute('ALTER TABLE `nf_comments` CHANGE `comment_id` `id` INT(11) UNSIGNED NOT NULL AUTO_INCREMENT')
+					->execute('RENAME TABLE `nf_comments` TO `nf_comment`');
 	}
 }
 

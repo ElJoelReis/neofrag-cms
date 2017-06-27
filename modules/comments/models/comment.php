@@ -18,23 +18,23 @@ You should have received a copy of the GNU Lesser General Public License
 along with NeoFrag. If not, see <http://www.gnu.org/licenses/>.
 **************************************************************************/
 
-class m_comments_c_ajax_checker extends Controller_Module
+class m_comments_m_comments extends Model2
 {
-	public function delete($comment_id)
+	static public function __schema()
 	{
-		$comment = $this->db->select('user_id', 'module_id', 'module')
-							->from('nf_comment')
-							->where('id', (int)$comment_id)
-							->row();
-		
-		if ($comment && ($this->user->admin || ($this->user->id && $comment['user_id'] == $this->user->id)))
-		{
-			return [$comment_id, $comment['module_id'], $comment['module']];
-		}
+		return [
+			'id'        => self::field()->primary(),
+			'parent'    => self::field()->depends('comments/comment')->null,
+			'user'      => self::field()->depends('user'),
+			'module_id' => self::field()->int(),
+			'module'    => self::field()->text(100),
+			'content'   => self::field()->text(),
+			'date'      => self::field()->datetime()
+		];
 	}
 }
 
 /*
-NeoFrag Alpha 0.1.5
-./modules/comments/controllers/ajax_checker.php
+NeoFrag Alpha 0.1.7
+./modules/comments/models/comment.php
 */

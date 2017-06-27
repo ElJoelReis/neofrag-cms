@@ -1,4 +1,4 @@
-<div id="comment-<?php echo $data['comment_id']; ?>" class="media<?php if ($data['parent_id'] !== NULL) echo ' comments-child'; ?>">
+<div id="comment-<?php echo $data['id']; ?>" class="media<?php if ($data['parent_id'] !== NULL) echo ' comments-child'; ?>">
 	<div class="media-left">
 		<?php echo $this->user->avatar($data['avatar'], $data['sex'], $data['user_id'], $data['username']); ?>
 	</div>
@@ -8,12 +8,12 @@
 			
 			if ($this->user->id && $data['parent_id'] == NULL)
 			{
-				$actions[] = '<a class="comment-reply" href="#" data-comment-id="'.$data['comment_id'].'">'.icon('fa-mail-reply').' '.$this->lang('reply').'</a>';
+				$actions[] = '<a class="comment-reply" href="#" data-comment-id="'.$data['id'].'">'.icon('fa-mail-reply').' '.$this->lang('reply').'</a>';
 			}
 			
 			if ($this->user->admin || ($this->user->id && $this->user->id == $data['user_id']))
 			{
-				$actions[] = $this->button_delete('ajax/comments/delete/'.$data['comment_id']);
+				$actions[] = $this->button_delete('ajax/comments/delete/'.$data['id']);
 			}
 			
 			if ($actions)

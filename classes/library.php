@@ -20,7 +20,7 @@ along with NeoFrag. If not, see <http://www.gnu.org/licenses/>.
 
 class Library extends NeoFrag
 {
-	static public $ID;
+	static protected $__id = [];
 
 	public $id;
 	public $load;
@@ -59,7 +59,20 @@ class Library extends NeoFrag
 
 	public function set_id($id = NULL)
 	{
-		$this->id = $id ?: md5($this->name.++self::$ID);
+		if ($id)
+		{
+			$this->id = $id;
+		}
+		else if (defined('static::ID'))
+		{
+			if (!isset(self::$__id[$this->name]))
+			{
+				self::$__id[$this->name] = 0;
+			}
+
+			$this->id = md5($this->name.self::$__id[$this->name]++);
+		}
+
 		return $this;
 	}
 }

@@ -20,6 +20,8 @@ along with NeoFrag. If not, see <http://www.gnu.org/licenses/>.
 
 class Modal extends Library
 {
+	const ID = NULL;
+
 	protected $_header;
 	protected $_buttons = [];
 	protected $_body;

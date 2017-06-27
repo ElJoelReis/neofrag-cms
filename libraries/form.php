@@ -20,6 +20,8 @@ along with NeoFrag. If not, see <http://www.gnu.org/licenses/>.
 
 class Form extends Library
 {
+	const ID = NULL;
+
 	static private $types = [
 		'text',
 		'password',

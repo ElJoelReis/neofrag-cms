@@ -20,6 +20,8 @@ along with NeoFrag. If not, see <http://www.gnu.org/licenses/>.
 
 class Table extends Library
 {
+	const ID = NULL;
+
 	private $_ajax          = FALSE;
 	private $_pagination    = TRUE;
 	private $_columns       = [];

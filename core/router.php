@@ -152,11 +152,6 @@ class Router extends Core
 		
 		if ($module->name != 'error')
 		{
-			if (($ajax_error = $this->url->ajax_header && !$this->url->ajax && !$this->url->ajax_allowed) && !post('table_id'))
-			{
-				return $this->_load(['error']);
-			}
-			
 			if ($this->url->admin)
 			{
 				$controller_name[] = 'admin';
@@ -193,7 +188,7 @@ class Router extends Core
 
 				$output = $controller->method($method, $segments);
 
-				if ($module->name == 'error' || ((empty($ajax_error) || $this->url->ajax_allowed) && $this->url->extension_allowed))
+				if ($module->name == 'error' || ((!$this->url->ajax_header || $this->url->ajax || $this->url->ajax_allowed) && $this->url->extension_allowed))
 				{
 					$module->append_output($output);
 					return;

@@ -32,7 +32,9 @@ class i_0_1_7 extends Install
 					->execute('ALTER TABLE `nf_files` CHANGE `file_id` `id` INT(11) UNSIGNED NOT NULL AUTO_INCREMENT')
 					->execute('RENAME TABLE `nf_files` TO `nf_file`')
 					->execute('ALTER TABLE `nf_comments` CHANGE `comment_id` `id` INT(11) UNSIGNED NOT NULL AUTO_INCREMENT')
-					->execute('RENAME TABLE `nf_comments` TO `nf_comment`');
+					->execute('RENAME TABLE `nf_comments` TO `nf_comment`')
+					->execute('ALTER TABLE nf_talks CONVERT TO CHARACTER SET utf8')
+					->execute('ALTER TABLE nf_talks_messages CONVERT TO CHARACTER SET utf8');
 	}
 }
 

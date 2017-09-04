@@ -71,17 +71,17 @@ spl_autoload_register(function($name){
 		$name = substr($name, 2);
 	}
 
-	$dir = $override ? 'overrides' : 'neofrag';
+	$dir = $override ? 'overrides/' : '';
 
-	if (file_exists($file = $dir.'/classes/'.$name.'.php'))
+	if (file_exists($file = $dir.'classes/'.$name.'.php'))
 	{
 		require_once $file;
 	}
-	else if (preg_match('/^(.+?)_(.+)/', $name, $match) && file_exists($dir.'/libraries/'.$match[1].'.php') && file_exists($file = $dir.'/libraries/'.$match[1].'s/'.$match[2].'.php'))
+	else if (preg_match('/^(.+?)_(.+)/', $name, $match) && file_exists($dir.'libraries/'.$match[1].'.php') && file_exists($file = $dir.'libraries/'.$match[1].'s/'.$match[2].'.php'))
 	{
 		require_once $file;
 	}
-	else if (file_exists($file = $dir.'/libraries/'.$name.'.php'))
+	else if (file_exists($file = $dir.'libraries/'.$name.'.php'))
 	{
 		require_once $file;
 	}
@@ -132,51 +132,47 @@ $NeoFrag = load('loader', [
 	'assets' => [
 		'assets',
 		'overrides/themes/default',
-		'neofrag/themes/default'
+		'themes/default'
 	],
 	'authenticators' => [
 		'authenticators'
 	],
 	'config' => [
 		'overrides/config',
-		'neofrag/config',
 		'config'
 	],
 	'core' => [
 		'overrides/core',
-		'neofrag/core'
+		'core'
 	],
 	'helpers' => [
 		'overrides/helpers',
-		'neofrag/helpers'
+		'helpers'
 	],
 	'lang' => [
 		'overrides/lang',
-		'neofrag/lang'
+		'lang'
 	],
 	'libraries' => [
 		'overrides/libraries',
-		'neofrag/libraries',
+		'libraries',
 	],
 	'modules' => [
 		'overrides/modules',
-		'neofrag/modules',
 		'modules'
 	],
 	'themes' => [
 		'overrides/themes',
-		'neofrag/themes',
 		'themes'
 	],
 	'views' => [
 		'overrides/themes/default/views',
-		'neofrag/themes/default/views',
+		'themes/default/views',
 		'overrides/views',
-		'neofrag/views'
+		'views'
 	],
 	'widgets' => [
 		'overrides/widgets',
-		'neofrag/widgets',
 		'widgets'
 	]
 ]);

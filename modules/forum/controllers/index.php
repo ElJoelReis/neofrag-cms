@@ -176,7 +176,7 @@ class m_forum_c_index extends Controller_Module
 		$this	->title($title)
 				->_breadcrumb($category_id, $forum_id)
 				->breadcrumb()
-				->js('neofrag.delete');
+				->js('delete');
 		
 		$last_message_read = NULL;
 		

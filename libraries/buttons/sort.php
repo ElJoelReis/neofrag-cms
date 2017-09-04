@@ -22,7 +22,7 @@ class Button_sort extends Library
 {
 	public function __invoke($id, $url, $parent = 'table', $items = 'tr')
 	{
-		return $this->js('neofrag.sortable')
+		return $this->js('sortable')
 					->button()
 					->tooltip($this->lang('sort'))
 					->icon('fa-arrows-v')

@@ -61,7 +61,7 @@ class t_admin extends Theme
 			if (version_compare(version_format($version->version), version_format(NEOFRAG_VERSION), '>'))
 			{
 				$this->add_data('update', $version);
-				$this->js('neofrag.update');
+				$this->js('update');
 			}
 		}
 
@@ -72,7 +72,7 @@ class t_admin extends Theme
 				->css('font-awesome.min')
 				->css('style')
 				->js('metisMenu.min')
-				->js('neofrag.navigation')
+				->js('navigation')
 				->js('slideout.min')
 				->add_data('menu', [
 					[

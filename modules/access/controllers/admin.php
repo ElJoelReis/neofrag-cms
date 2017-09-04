@@ -98,8 +98,8 @@ class m_access_c_admin extends Controller_Module
 				->icon($module->icon)
 				->css('access')
 				->js('access')
-				->css('neofrag.table')
-				->js('neofrag.table');
+				->css('table')
+				->js('table');
 		
 		return [
 			$this->row(

@@ -197,9 +197,9 @@ class Debug extends Core
 		if ($this->is_enabled())
 		{
 			$this->load	->css('font.open-sans.300.400.600.700.800')
-						->css('neofrag.debugbar')
+						->css('debugbar')
 						->css('jquery.mCustomScrollbar.min')
-						->js('neofrag.debugbar')
+						->js('debugbar')
 						->js('jquery.mCustomScrollbar.min');
 
 			return $this->view('debug/debugbar', [

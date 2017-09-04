@@ -24,7 +24,7 @@ class Panel_Box extends Panel
 
 	public function __toString()
 	{
-		$this->css('neofrag.panel-box');
+		$this->css('panel-box');
 
 		return '<div class="small-box '.$this->_color.'">
 					<div class="inner">

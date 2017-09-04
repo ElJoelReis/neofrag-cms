@@ -22,8 +22,8 @@ class Button_delete extends Library
 {
 	public function __invoke($url, $title = NULL)
 	{
-		return $this->css('neofrag.delete')
-					->js('neofrag.delete')
+		return $this->css('delete')
+					->js('delete')
 					->button()
 					->tooltip($title ?: $this->lang('remove'))
 					->url($url)

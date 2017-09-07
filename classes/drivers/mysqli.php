@@ -289,5 +289,5 @@ class Driver_mysqli extends Driver
 
 /*
 NeoFrag Alpha 0.1.6
-./databases/mysqli.php
+./classes/drivers/mysqli.php
 */

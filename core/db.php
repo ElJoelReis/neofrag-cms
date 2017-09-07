@@ -60,7 +60,7 @@ class Db extends Core
 			return;
 		}
 
-		if (check_file($path = 'databases/'.$config['driver'].'.php'))
+		if (check_file($path = 'classes/drivers/'.$config['driver'].'.php'))
 		{
 			require_once $path;
 

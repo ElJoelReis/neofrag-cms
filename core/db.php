@@ -323,6 +323,18 @@ class Db extends Core
 		return $get;
 	}
 
+	public function index()
+	{
+		$list = [];
+
+		foreach ($this->get(FALSE) as $row)
+		{
+			$list[array_shift($row)] = array_shift($row);
+		}
+
+		return $list;
+	}
+
 	public function row($cast = TRUE)
 	{
 		$row = $this->_exec('row');

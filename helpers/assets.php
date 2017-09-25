@@ -29,8 +29,8 @@ function icon($icon)
 	{
 		return '<i class="fa fa-fw fa-'.$match[1].'"></i>';
 	}
-	
-	return '';
+
+	return '<i class="fa fa-fw">'.$icon.'</i>';
 }
 
 function asset($file_path, $file_name = '')

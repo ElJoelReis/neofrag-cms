@@ -20,11 +20,29 @@ along with NeoFrag. If not, see <http://www.gnu.org/licenses/>.
 
 class Core extends NeoFrag
 {
-	public $load;
+	static protected $_callbacks = [];
 
-	public function __construct()
+	public function __get($name)
 	{
-		$this->load = NeoFrag();
+		return NeoFrag()->$name;
+	}
+
+	protected function on($core, $event, $callback)
+	{
+		static::$_callbacks[$core][$event][] = $callback;
+	}
+
+	public function trigger($event, &...$args)
+	{
+		if (isset(static::$_callbacks[$this->name][$event]))
+		{
+			foreach (static::$_callbacks[$this->name][$event] as $callback)
+			{
+				call_user_func_array($callback, $args);	
+			}
+
+			unset(static::$_callbacks[$this->name][$event]);
+		}
 	}
 }
 

@@ -34,8 +34,6 @@ class Debug extends Core
 
 	public function __construct($config = [])
 	{
-		parent::__construct();
-
 		if (isset($config['debugbar']) && in_array($config['debugbar'], [1, 2]))
 		{
 			$this->_debugbar = $config['debugbar'];
@@ -117,10 +115,13 @@ class Debug extends Core
 
 			foreach ($data as $key => $value)
 			{
-				$output .= '	<tr>
-									<td style="width: 200px;"><b>'.$key.'</b></td>
-									<td>'.$this->table($value).'</td>
-								</tr>';
+				if (!is_a($value, 'NeoFrag'))
+				{
+					$output .= '	<tr>
+										<td style="width: 200px;"><b>'.$key.'</b></td>
+										<td>'.$this->table($value).'</td>
+									</tr>';
+				}
 			}
 
 			$output .= '	</tbody>

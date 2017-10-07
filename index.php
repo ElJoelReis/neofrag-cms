@@ -211,14 +211,13 @@ foreach ([
 }
 
 foreach([
+			'url',
 			'debug',
 			'output',
 			'db',
-			'url',
-			'config',
 			'access',
+			'config',
 			'session',
-			'user',
 			'groups',
 			'router'
 		] as $library
@@ -226,12 +225,14 @@ foreach([
 {
 	$NeoFrag->{'core_'.$library};
 
-	if ($library == 'config' && is_asset() && !preg_match('#^backups/#', $NeoFrag->url->request))
+	//TODO 0.1.7
+	if ($library == 'session' && is_asset())
 	{
 		asset($NeoFrag->url->request);
 	}
 }
 
+//TODO 0.1.7
 if (isset($NeoFrag->config->nf_dispositions_upgrade) && !$NeoFrag->config->nf_dispositions_upgrade)
 {
 	foreach ($NeoFrag->db->from('nf_dispositions')->get() as $disposition)
@@ -304,6 +305,7 @@ if (isset($NeoFrag->config->nf_dispositions_upgrade) && !$NeoFrag->config->nf_di
 	}
 }
 
+//TODO 0.1.7
 echo $NeoFrag->router()->output;
 
 /*

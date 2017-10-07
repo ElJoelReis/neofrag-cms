@@ -82,8 +82,6 @@ class Db extends Core
 
 	public function __construct($config)
 	{
-		parent::__construct();
-		
 		array_walk($config, [$this, '_connect']);
 
 		if (empty(self::$_drivers['default']))

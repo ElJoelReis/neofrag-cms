@@ -315,7 +315,7 @@ class m_user_c_admin extends Controller_Module
 						->update('nf_user', ['deleted' => TRUE]);
 
 			$this->db	->where('user_id', $user_id)
-						->delete('nf_sessions');
+						->delete('nf_session');
 
 			return 'OK';
 		}
@@ -561,8 +561,8 @@ class m_user_c_admin extends Controller_Module
 
 		if ($this->form->is_valid())
 		{
-			$this->db	->where('session_id', $session_id)
-						->delete('nf_sessions');
+			$this->db	->where('id', $session_id)
+						->delete('nf_session');
 
 			return 'OK';
 		}

@@ -52,7 +52,7 @@ class NeoFrag_m_user extends Model2
 			else if ($this->id)
 			{
 				$this->online = $this->db	->select('MAX(last_activity) > DATE_SUB(NOW(), INTERVAL 5 MINUTE)')
-											->from('nf_sessions')
+											->from('nf_session')
 											->where('user_id', $this->id)
 											->row();
 			}

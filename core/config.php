@@ -25,22 +25,7 @@ class Config extends Core
 
 	public function __construct()
 	{
-		parent::__construct();
-
-		$this->reset();
-	}
-
-	public function reset()
-	{
-		$this->_configs = $this->_settings = [];
-
-		if (($configs = $this->load->db->select('site', 'lang', 'name', 'value', 'type')->from('nf_settings')->get()) === NULL)
-		{
-			header('HTTP/1.0 503 Service Unavailable');
-			exit('Database is empty');
-		}
-
-		foreach ($configs as $setting)
+		foreach ($this->db->select('site', 'lang', 'name', 'value', 'type')->from('nf_settings')->get() as $setting)
 		{
 			if ($setting['type'] == 'array')
 			{
@@ -66,30 +51,85 @@ class Config extends Core
 			$this->_settings[$setting['site']][$setting['lang']][$setting['name']] = $value;
 		}
 
-		$this->update('');
+		$load = function($site = '', $lang = ''){
+			$this->_configs['lang'] = $lang;
+			$this->_configs['site'] = $site;
+	
+			if (!empty($this->_settings[$site][$lang]))
+			{
+				foreach ($this->_settings[$site][$lang] as $name => $value)
+				{
+					$this->_configs[$name] = $value;
+				}
+			}
+		};
 
-		/*$nf_languages = $this->db	->select('code')
-									->from('nf_settings_languages')
-									->order_by('order')
-									->get();*/
+		$load();
 
-		//TODO
-		//$this->_configs['langs'] = array_unique(array_merge(array_intersect(array_filter(array_merge(/*[$this->session('language')], */preg_replace('/^(.+?)[;-].*/', '\1', explode(',', !empty($_SERVER['HTTP_ACCEPT_LANGUAGE']) ? $_SERVER['HTTP_ACCEPT_LANGUAGE'] : '')))), $nf_languages), $nf_languages));
+		$this->on('session', 'init', function() use ($load){
+			$n = 0;
+			$langs = [];
 
-		$langs = array_filter($this->model2('addon')->get('language'), function($a){
-			return $a;// || $a->settings()->enabled;//TODO
+			foreach ($this->model2('addon')->get('language') as $lang)
+			{
+				if (1)// || $lang->settings()->enabled;//TODO
+				{
+					$n++;
+					$langs[$lang->name] = $lang;
+				}
+			}
+
+			$main_lang = NULL;
+
+			if ($n > 1)
+			{
+				uasort($langs, function($a, $b){
+					return strnatcmp($a->settings()->order, $b->settings()->order);
+				});
+
+				$this->trigger('langs_listed', $langs, $main_lang);
+
+				if (!$main_lang)
+				{
+					if (($this->user() && ($addon = $this->user->language->addon()) && isset($langs[$name = $addon->name])) || isset($langs[$name = $this->session('language')]))
+					{
+						$main_lang = $langs[$name];
+					}
+					else if (!empty($_SERVER['HTTP_ACCEPT_LANGUAGE']) && preg_match_all('/([a-zA-Z-]+)(?:;q=([0-9.]+))?,?/', $_SERVER['HTTP_ACCEPT_LANGUAGE'], $matches, PREG_SET_ORDER))
+					{
+						$accepted = [];
+
+						foreach ($matches as $match)
+						{
+							$accepted[$match[1]] = isset($match[2]) ? (float)$match[2] : 1;
+						}
+
+						arsort($accepted);
+
+						foreach ($accepted as $name => $q)
+						{
+							if (isset($langs[$name]))
+							{
+								$main_lang = $langs[$name];
+								break;
+							}
+						}
+					}
+				}
+			}
+
+			if (!$main_lang)
+			{
+				$main_lang = $langs[0];
+			}
+
+			$this->trigger('lang_selected', $main_lang);
+
+			$this->_configs['lang']  = $main_lang->name;
+			$this->_configs['langs'] = array_values($langs);
+			
+			setlocale(LC_ALL, $main_lang->locale());
 		});
-
-		usort($langs, function($a, $b){
-			return strnatcmp($a->settings()->order, $b->settings()->order);
-		});
-
-		$this->_configs['langs'] = $langs;
-
-		$this->update('default');
-
-		$this->update('default', 'fr');
-		//$this->update('default', array_shift($nf_languages));
 	}
 
 	public function __get($name)
@@ -141,20 +181,6 @@ class Config extends Core
 		$this->_configs[$name] = $value;
 
 		return $this;
-	}
-
-	public function update($site = '', $lang = '')
-	{
-		$this->_configs['lang'] = $lang;
-		$this->_configs['site'] = $site;
-
-		if (!empty($this->_settings[$site][$lang]))
-		{
-			foreach ($this->_settings[$site][$lang] as $name => $value)
-			{
-				$this->_configs[$name] = $value;
-			}
-		}
 	}
 
 	public function debugbar()

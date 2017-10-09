@@ -4,10 +4,6 @@ AddDefaultCharset UTF-8
 <IfModule mod_rewrite.c>
 	RewriteEngine On
 
-	##If your NeoFrag directory is not at http root
-	##you need to replace "/" by the correct directory, for example "RewriteBase /neofrag/"
-	RewriteBase /
-
 	##Allow direct access to specific directories
 	#RewriteCond %{REQUEST_URI} ^/(dir1|dir2)/
 	#RewriteRule .* - [L,QSA]

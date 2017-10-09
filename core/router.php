@@ -26,7 +26,7 @@ class Router extends Core
 	{
 		$segments = ['error'];
 
-		if ((in_array($this->url->extension, ['', 'json', 'xml', 'txt']) || is_asset()) && !in_string('//', $this->url->request))
+		if (in_array($this->url->extension, ['', 'json', 'xml', 'txt']) || is_asset())
 		{
 			$segments = $this->url->segments;
 			

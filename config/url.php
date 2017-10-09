@@ -11,51 +11,36 @@ the Free Software Foundation, either version 3 of the License, or
 
 NeoFrag is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU Lesser General Public License for more details.
 
 You should have received a copy of the GNU Lesser General Public License
-along with NeoFrag. If not, see <http://www.gnu.org/licenses/>.
+along with NeoFrag.  If not, see <http://www.gnu.org/licenses/>.
 **************************************************************************/
 
-function url($url = '')
-{
-	return NeoFrag()->url($url);
-}
-
-function redirect($location = '')
-{
-	header('Location: '.url($location));
-	exit;
-}
-
-function redirect_back($default = '')
-{
-	header('Location: '.url(NeoFrag()->session->get_back() ?: $default));
-	exit;
-}
-
-function refresh()
-{
-	if (NeoFrag()->url->ajax())
+$url['segments'] = function($url){
+	if (preg_match('/^(humans|robots)\.txt$/', $url['request'], $match))
 	{
-		NeoFrag()->output->json([
-			'success' => 'refresh'
-		]);
+		$url['segments'] = explode('/', 'ajax/settings/'.$match[1]);
 	}
-	else
-	{
-		header('Location: '.$_SERVER['REQUEST_URI']);
-		exit;
-	}
-}
 
-function urltolink($url)
-{
-	return '<a href="'.$url.'">'.parse_url($url, PHP_URL_HOST).'</a>';
-}
+	return $url['segments'];
+};
+
+//TODO 0.1.7
+$url['domains'] = [
+	'neofr.ag'         => function(){
+	
+	},
+	'neofrag.download' => function(){
+		
+	},
+	'neofrag'          => function(){
+		return '';
+	}
+];
 
 /*
-NeoFrag Alpha 0.1.6
-./helpers/location.php
+NeoFrag Alpha 0.1.7
+./config/url.php
 */

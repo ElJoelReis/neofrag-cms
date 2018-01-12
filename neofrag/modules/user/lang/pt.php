@@ -42,27 +42,27 @@ $lang['group_delete_message']                = 'Tem certeza de que deseja elimin
 $lang['group_edited']                        = 'Grupo alterado';
 $lang['history']                             = 'Historico';
 $lang['initial_session_date']                = 'Visto pela primeira vez em';
-$lang['invalid_login']                       = 'Nome de usuário incorreto!';
-$lang['invalid_login_message']               = 'Se você tiver esquecido sua palavra-passe, use o <a href="'.url('user/lost-password').'">esqueci minha  palavra-passe</a> função, ';
+$lang['invalid_login']                       = 'Nome de utilizador incorreto!';
+$lang['invalid_login_message']               = 'Se tiver esquecido a sua palavra-passe, use a função <a href="'.url('user/lost-password').'">esqueci minha  palavra-passe</a>, ';
 $lang['invalid_password']                    = 'Palavra-passe incorrecta';
 $lang['last_pages_visited']                  = 'Última páginas visitadas';
 $lang['list_active_sessions']                = 'Lista de sessões ativas';
 $lang['login_required']                      = 'É necessário fazer Login';
-$lang['login_required_message']              = '<p>A página que você quer ter acesso é acessível apenas para usuários que estejam conectados.</p>Faça seu login se você já tiver conta. <br /> Você também pode criar uma nova conta de registrar abaixo.';
+$lang['login_required_message']              = '<p>A página que quer aceder é acessível apenas para utilizadores conectados.</p>Faça seu login se você já tiver conta. <br /> Você também pode criar uma nova conta de registrar abaixo.';
 $lang['logout']                              = 'Terminar sessão';
 $lang['manage_my_sessions']                  = 'Gerir as minhas sessões';
 $lang['member_area']                         = 'Espaço para membros';
 $lang['member_profile_title']                = 'Membro\'s perfil';
-$lang['my_active_sessions']                  = 'Minhas sessões ativas';
+$lang['my_active_sessions']                  = 'As minhas sessões ativas';
 $lang['new_password']                        = 'Nova palavra-passe';
 $lang['no_historic_available']               = 'Sem histórico disponível para apresentação';
 $lang['no_session']                          = 'Nenhuma sessão activa';
 $lang['none']                                = 'Nenhum';
 $lang['nonpersistent_connection']            = 'Conexão não-persistente';
-$lang['not_logged_in']                       = 'Você não está mais autenticado.';
+$lang['not_logged_in']                       = 'Foi descontectado.';
 $lang['offline']                             = 'indisponível';
 $lang['password_confirmation']               = 'Confirmação';
-$lang['password_not_match']                  = 'As senhas (passwords) digitadas devem ser iguais';
+$lang['password_not_match']                  = 'As passwords inseridas devem ser iguais';
 $lang['password_reset']                      = 'Repor a sua palavra-passe';
 $lang['password_reset_confirmation_email']   = 'Repor palavra-passe';
 $lang['password_reset_confirmation_message'] = 'Sua palavra-chave foi redefinida';
@@ -77,7 +77,7 @@ $lang['session_delete_message']              = 'Tem certeza de que deseja exclui
 $lang['sessions_historic']                   = 'A Minha sessão histórica';
 $lang['unknown']                             = 'Nenhum';
 $lang['user']                                = 'Utilizador';
-$lang['user_delete_message']                 = 'Tem certeza de deseja excluir o usuário<b>%s</b>?';
+$lang['user_delete_message']                 = 'Tem certeza de deseja excluir o utilizador<b>%s</b>?';
 $lang['username_description']                = 'Você pode fazer o login/conectar com seu endereço de e-mail ou com o nome utilizado para se registrar.';
 
 /*
